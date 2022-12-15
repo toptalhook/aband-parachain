@@ -30,21 +30,19 @@ pub enum Subcommand {
 	/// Export the genesis wasm of the parachain.
 	ExportGenesisWasm(cumulus_client_cli::ExportGenesisWasmCommand),
 
+	/// Run Instant Seal
+	RunInstantSeal(sc_cli::RunCmd),
+
 	/// Sub-commands concerned with benchmarking.
 	/// The pallet benchmarking moved to the `pallet` sub-command.
 	#[command(subcommand)]
 	Benchmark(frame_benchmarking_cli::BenchmarkCmd),
-
-	/// Try some testing command against a specified runtime state.
-	TryRuntime(try_runtime_cli::TryRuntimeCmd),
 }
 
 #[derive(Debug, clap::Parser)]
-#[command(
-	propagate_version = true,
-	args_conflicts_with_subcommands = true,
-	subcommand_negates_reqs = true
-)]
+#[clap(propagate_version = true)]
+#[clap(args_conflicts_with_subcommands = true)]
+#[clap(subcommand_negates_reqs = true)]
 pub struct Cli {
 	#[command(subcommand)]
 	pub subcommand: Option<Subcommand>,
@@ -52,18 +50,8 @@ pub struct Cli {
 	#[command(flatten)]
 	pub run: cumulus_client_cli::RunCmd,
 
-	/// Disable automatic hardware benchmarks.
-	///
-	/// By default these benchmarks are automatically ran at startup and measure
-	/// the CPU speed, the memory bandwidth and the disk speed.
-	///
-	/// The results are then printed out in the logs, and also sent as part of
-	/// telemetry, if telemetry is enabled.
-	#[arg(long)]
-	pub no_hardware_benchmarks: bool,
-
-	/// Relay chain arguments
-	#[arg(raw = true)]
+	/// Relaychain arguments
+	#[arg(raw = true, value_parser)]
 	pub relay_chain_args: Vec<String>,
 }
 

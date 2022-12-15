@@ -17,8 +17,8 @@
 	},
 	"parachains": [
 		{
-			"bin": "../target/release/polkadot-parachain",
-			"id": "200",
+			"bin": "../target/release/aband",
+			"id": "2022",
 			"balance": "1000000000000000000000",
 			"nodes": [
 				{
@@ -26,7 +26,15 @@
 					"name": "alice",
 					"port": 31200,
 					"flags": [
-						"--force-authoring",
+						"--",
+						"--execution=wasm"
+					]
+				},
+				{
+					"wsPort": 9999,
+					"name": "bob",
+					"port": 31300,
+					"flags": [
 						"--",
 						"--execution=wasm"
 					]

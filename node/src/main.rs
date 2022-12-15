@@ -1,4 +1,4 @@
-//! Substrate Parachain Node Template CLI
+//! Substrate Node CLI library.
 
 #![warn(missing_docs)]
 

@@ -3,24 +3,21 @@ use std::net::SocketAddr;
 use codec::Encode;
 use cumulus_client_cli::generate_genesis_block;
 use cumulus_primitives_core::ParaId;
-use frame_benchmarking_cli::{BenchmarkCmd, SUBSTRATE_REFERENCE_HARDWARE};
-use log::{info, warn};
-use parachain_template_runtime::Block;
+use frame_benchmarking_cli::BenchmarkCmd;
+use log::info;
+use parachain_template_runtime::{Block, RuntimeApi};
 use sc_cli::{
 	ChainSpec, CliConfiguration, DefaultConfigurationValues, ImportParams, KeystoreParams,
 	NetworkParams, Result, RuntimeVersion, SharedParams, SubstrateCli,
 };
-use sc_service::{
-	config::{BasePath, PrometheusConfig},
-	TaskManager,
-};
+use sc_service::config::{BasePath, PrometheusConfig};
 use sp_core::hexdisplay::HexDisplay;
 use sp_runtime::traits::{AccountIdConversion, Block as BlockT};
 
 use crate::{
 	chain_spec,
 	cli::{Cli, RelayChainCli, Subcommand},
-	service::{new_partial, ParachainNativeExecutor},
+	service::{new_partial, TemplateRuntimeExecutor},
 };
 
 fn load_spec(id: &str) -> std::result::Result<Box<dyn ChainSpec>, String> {
@@ -34,7 +31,7 @@ fn load_spec(id: &str) -> std::result::Result<Box<dyn ChainSpec>, String> {
 
 impl SubstrateCli for Cli {
 	fn impl_name() -> String {
-		"Parachain Collator Template".into()
+		"Aband Network".into()
 	}
 
 	fn impl_version() -> String {
@@ -43,7 +40,7 @@ impl SubstrateCli for Cli {
 
 	fn description() -> String {
 		format!(
-			"Parachain Collator Template\n\nThe command-line arguments provided first will be \
+			"Aband Network\n\nThe command-line arguments provided first will be \
 		passed to the parachain node, while the arguments provided after -- will be passed \
 		to the relay chain node.\n\n\
 		{} <parachain-args> -- <relay-chain-args>",
@@ -56,11 +53,11 @@ impl SubstrateCli for Cli {
 	}
 
 	fn support_url() -> String {
-		"https://github.com/paritytech/cumulus/issues/new".into()
+		"https://github.com/Aband-Network/aband-parachain/issues/new".into()
 	}
 
 	fn copyright_start_year() -> i32 {
-		2020
+		2022
 	}
 
 	fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
@@ -74,7 +71,7 @@ impl SubstrateCli for Cli {
 
 impl SubstrateCli for RelayChainCli {
 	fn impl_name() -> String {
-		"Parachain Collator Template".into()
+		"Aband Network".into()
 	}
 
 	fn impl_version() -> String {
@@ -83,7 +80,7 @@ impl SubstrateCli for RelayChainCli {
 
 	fn description() -> String {
 		format!(
-			"Parachain Collator Template\n\nThe command-line arguments provided first will be \
+			"Aband Network\n\nThe command-line arguments provided first will be \
 		passed to the parachain node, while the arguments provided after -- will be passed \
 		to the relay chain node.\n\n\
 		{} <parachain-args> -- <relay-chain-args>",
@@ -96,11 +93,11 @@ impl SubstrateCli for RelayChainCli {
 	}
 
 	fn support_url() -> String {
-		"https://github.com/paritytech/cumulus/issues/new".into()
+		"https://github.com/Aband-Network/aband-parachain/issues/new".into()
 	}
 
 	fn copyright_start_year() -> i32 {
-		2020
+		2022
 	}
 
 	fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
@@ -116,7 +113,13 @@ macro_rules! construct_async_run {
 	(|$components:ident, $cli:ident, $cmd:ident, $config:ident| $( $code:tt )* ) => {{
 		let runner = $cli.create_runner($cmd)?;
 		runner.async_run(|$config| {
-			let $components = new_partial(&$config)?;
+			let $components = new_partial::<
+				RuntimeApi,
+				TemplateRuntimeExecutor,
+			>(
+				// We default to the non-parachain import queue and select chain.
+				&$config, false,
+			)?;
 			let task_manager = $components.task_manager;
 			{ $( $code )* }.map(|v| (v, task_manager))
 		})
@@ -197,14 +200,15 @@ pub fn run() -> Result<()> {
 			match cmd {
 				BenchmarkCmd::Pallet(cmd) =>
 					if cfg!(feature = "runtime-benchmarks") {
-						runner.sync_run(|config| cmd.run::<Block, ParachainNativeExecutor>(config))
+						runner.sync_run(|config| cmd.run::<Block, TemplateRuntimeExecutor>(config))
 					} else {
 						Err("Benchmarking wasn't enabled when building the node. \
-					You can enable it with `--features runtime-benchmarks`."
+			  You can enable it with `--features runtime-benchmarks`."
 							.into())
 					},
 				BenchmarkCmd::Block(cmd) => runner.sync_run(|config| {
-					let partials = new_partial(&config)?;
+					let partials =
+						new_partial::<RuntimeApi, TemplateRuntimeExecutor>(&config, false)?;
 					cmd.run(partials.client)
 				}),
 				#[cfg(not(feature = "runtime-benchmarks"))]
@@ -223,45 +227,25 @@ pub fn run() -> Result<()> {
 
 					cmd.run(config, partials.client.clone(), db, storage)
 				}),
-				BenchmarkCmd::Machine(cmd) =>
-					runner.sync_run(|config| cmd.run(&config, SUBSTRATE_REFERENCE_HARDWARE.clone())),
-				// NOTE: this allows the Client to leniently implement
-				// new benchmark commands without requiring a companion MR.
-				#[allow(unreachable_patterns)]
-				_ => Err("Benchmarking sub-command unsupported".into()),
+				BenchmarkCmd::Overhead(_) => Err("Unsupported benchmarking command".into()),
+				BenchmarkCmd::Extrinsic(_) => Err("Unsupported benchmarking command".into()),
+				BenchmarkCmd::Machine(cmd) => runner.sync_run(|config| {
+					cmd.run(&config, frame_benchmarking_cli::SUBSTRATE_REFERENCE_HARDWARE.clone())
+				}),
 			}
 		},
-		Some(Subcommand::TryRuntime(cmd)) => {
-			if cfg!(feature = "try-runtime") {
-				let runner = cli.create_runner(cmd)?;
 
-				// grab the task manager.
-				let registry = &runner.config().prometheus_config.as_ref().map(|cfg| &cfg.registry);
-				let task_manager =
-					TaskManager::new(runner.config().tokio_handle.clone(), *registry)
-						.map_err(|e| format!("Error: {:?}", e))?;
-
-				runner.async_run(|config| {
-					Ok((cmd.run::<Block, ParachainNativeExecutor>(config), task_manager))
-				})
-			} else {
-				Err("Try-runtime must be enabled by `--features try-runtime`.".into())
-			}
+		Some(Subcommand::RunInstantSeal(run_cmd)) => {
+			let runner = cli.create_runner(run_cmd)?;
+			runner.run_node_until_exit(|config| async move {
+				crate::service::start_instant_seal_node(config).map_err(sc_cli::Error::Service)
+			})
 		},
 		None => {
 			let runner = cli.create_runner(&cli.run.normalize())?;
 			let collator_options = cli.run.collator_options();
 
 			runner.run_node_until_exit(|config| async move {
-				let hwbench = if !cli.no_hardware_benchmarks {
-					config.database.path().map(|database_path| {
-						let _ = std::fs::create_dir_all(&database_path);
-						sc_sysinfo::gather_hwbench(Some(database_path))
-					})
-				} else {
-					None
-				};
-
 				let para_id = chain_spec::Extensions::try_get(&*config.chain_spec)
 					.map(|e| e.para_id)
 					.ok_or_else(|| "Could not find parachain ID in chain-spec.")?;
@@ -274,9 +258,10 @@ pub fn run() -> Result<()> {
 				let id = ParaId::from(para_id);
 
 				let parachain_account =
-					AccountIdConversion::<polkadot_primitives::v2::AccountId>::into_account_truncating(&id);
+				AccountIdConversion::<polkadot_primitives::v2::AccountId>::into_account_truncating(&id);
 
-				let state_version = Cli::native_runtime_version(&config.chain_spec).state_version();
+				let state_version =
+					RelayChainCli::native_runtime_version(&config.chain_spec).state_version();
 				let block: Block = generate_genesis_block(&*config.chain_spec, state_version)
 					.map_err(|e| format!("{:?}", e))?;
 				let genesis_state = format!("0x{:?}", HexDisplay::from(&block.header().encode()));
@@ -291,20 +276,10 @@ pub fn run() -> Result<()> {
 				info!("Parachain genesis state: {}", genesis_state);
 				info!("Is collating: {}", if config.role.is_authority() { "yes" } else { "no" });
 
-				if collator_options.relay_chain_rpc_url.is_some() && cli.relay_chain_args.len() > 0 {
-					warn!("Detected relay chain node arguments together with --relay-chain-rpc-url. This command starts a minimal Polkadot node that only uses a network-related subset of all relay chain CLI options.");
-				}
-
-				crate::service::start_parachain_node(
-					config,
-					polkadot_config,
-					collator_options,
-					id,
-					hwbench,
-				)
-				.await
-				.map(|r| r.0)
-				.map_err(Into::into)
+				crate::service::start_parachain_node(config, polkadot_config, collator_options, id)
+					.await
+					.map(|r| r.0)
+					.map_err(Into::into)
 			})
 		},
 	}
@@ -399,10 +374,6 @@ impl CliConfiguration<Self> for RelayChainCli {
 		self.base.base.transaction_pool(is_dev)
 	}
 
-	fn trie_cache_maximum_size(&self) -> Result<Option<usize>> {
-		self.base.base.trie_cache_maximum_size()
-	}
-
 	fn rpc_methods(&self) -> Result<sc_service::config::RpcMethods> {
 		self.base.base.rpc_methods()
 	}
@@ -440,9 +411,5 @@ impl CliConfiguration<Self> for RelayChainCli {
 		chain_spec: &Box<dyn ChainSpec>,
 	) -> Result<Option<sc_telemetry::TelemetryEndpoints>> {
 		self.base.base.telemetry_endpoints(chain_spec)
-	}
-
-	fn node_name(&self) -> Result<String> {
-		self.base.base.node_name()
 	}
 }

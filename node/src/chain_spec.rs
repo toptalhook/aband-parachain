@@ -1,10 +1,22 @@
 use cumulus_primitives_core::ParaId;
-use parachain_template_runtime::{AccountId, AuraId, Signature, EXISTENTIAL_DEPOSIT};
-use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
+use nimbus_primitives::NimbusId;
+use pallet_author_slot_filter::EligibilityValue;
+use parachain_template_runtime::{
+	AccountId, AuraId, Balance, CouncilConfig, MaxNominations, NominationPoolsConfig, Signature,
+	StakerStatus, StakingConfig, TechnicalCommitteeConfig, EXISTENTIAL_DEPOSIT, UNIT,
+};
+use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup, Properties};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
 use sp_core::{sr25519, Pair, Public};
-use sp_runtime::traits::{IdentifyAccount, Verify};
+// use rand::seq::SliceRandom;
+use rand::{seq::SliceRandom, Rng};
+use sp_runtime::{
+	traits::{IdentifyAccount, Verify},
+	Perbill, Permill,
+};
+
+pub const PARA_ID: u32 = 2022;
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
 pub type ChainSpec =
@@ -42,8 +54,15 @@ type AccountPublic = <Signature as Verify>::Signer;
 /// Generate collator keys from seed.
 ///
 /// This function's return type must always match the session keys of the chain in tuple format.
-pub fn get_collator_keys_from_seed(seed: &str) -> AuraId {
-	get_from_seed::<AuraId>(seed)
+pub fn get_collator_keys_from_seed(seed: &str) -> NimbusId {
+	get_pair_from_seed::<NimbusId>(seed)
+}
+
+/// Helper function to generate a crypto pair from seed
+pub fn get_pair_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
+	TPublic::Pair::from_string(&format!("//{}", seed), None)
+		.expect("static values are valid; qed")
+		.public()
 }
 
 /// Helper function to generate an account ID from seed
@@ -57,22 +76,27 @@ where
 /// Generate the session keys from individual elements.
 ///
 /// The input must be a tuple of individual keys (a single arg for now since we have just one key).
-pub fn template_session_keys(keys: AuraId) -> parachain_template_runtime::SessionKeys {
-	parachain_template_runtime::SessionKeys { aura: keys }
+pub fn template_session_keys(keys: NimbusId) -> parachain_template_runtime::SessionKeys {
+	parachain_template_runtime::SessionKeys { nimbus: keys }
+}
+
+const ENDOWMENT: Balance = 10_000_000 * UNIT;
+const STASH: Balance = ENDOWMENT / 1000;
+
+fn get_properties() -> Properties {
+	let mut properties = sc_chain_spec::Properties::new();
+	properties.insert("tokenSymbol".into(), "BAND".into());
+	properties.insert("tokenDecimals".into(), 12.into());
+	properties.insert("ss58Format".into(), 42.into());
+	properties
 }
 
 pub fn development_config() -> ChainSpec {
-	// Give your base currency a unit name and decimal places
-	let mut properties = sc_chain_spec::Properties::new();
-	properties.insert("tokenSymbol".into(), "UNIT".into());
-	properties.insert("tokenDecimals".into(), 12.into());
-	properties.insert("ss58Format".into(), 42.into());
-
 	ChainSpec::from_genesis(
 		// Name
-		"Development",
+		"Aband Development",
 		// ID
-		"dev",
+		"aband dev",
 		ChainType::Development,
 		move || {
 			testnet_genesis(
@@ -80,13 +104,16 @@ pub fn development_config() -> ChainSpec {
 				vec![
 					(
 						get_account_id_from_seed::<sr25519::Public>("Alice"),
+						get_account_id_from_seed::<sr25519::Public>("Alice"),
 						get_collator_keys_from_seed("Alice"),
 					),
 					(
 						get_account_id_from_seed::<sr25519::Public>("Bob"),
+						get_account_id_from_seed::<sr25519::Public>("Alice"),
 						get_collator_keys_from_seed("Bob"),
 					),
 				],
+				vec![],
 				vec![
 					get_account_id_from_seed::<sr25519::Public>("Alice"),
 					get_account_id_from_seed::<sr25519::Public>("Bob"),
@@ -101,33 +128,29 @@ pub fn development_config() -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
 					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 				],
-				1000.into(),
+				PARA_ID.into(),
 			)
 		},
 		Vec::new(),
 		None,
 		None,
 		None,
-		None,
+		Some(get_properties()),
 		Extensions {
 			relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
-			para_id: 1000,
+			para_id: PARA_ID,
 		},
 	)
 }
 
 pub fn local_testnet_config() -> ChainSpec {
 	// Give your base currency a unit name and decimal places
-	let mut properties = sc_chain_spec::Properties::new();
-	properties.insert("tokenSymbol".into(), "UNIT".into());
-	properties.insert("tokenDecimals".into(), 12.into());
-	properties.insert("ss58Format".into(), 42.into());
 
 	ChainSpec::from_genesis(
 		// Name
-		"Local Testnet",
+		"Aband Testnet",
 		// ID
-		"local_testnet",
+		"aband_testnet",
 		ChainType::Local,
 		move || {
 			testnet_genesis(
@@ -135,13 +158,16 @@ pub fn local_testnet_config() -> ChainSpec {
 				vec![
 					(
 						get_account_id_from_seed::<sr25519::Public>("Alice"),
+						get_account_id_from_seed::<sr25519::Public>("Alice"),
 						get_collator_keys_from_seed("Alice"),
 					),
 					(
 						get_account_id_from_seed::<sr25519::Public>("Bob"),
+						get_account_id_from_seed::<sr25519::Public>("Bob"),
 						get_collator_keys_from_seed("Bob"),
 					),
 				],
+				vec![],
 				vec![
 					get_account_id_from_seed::<sr25519::Public>("Alice"),
 					get_account_id_from_seed::<sr25519::Public>("Bob"),
@@ -156,7 +182,7 @@ pub fn local_testnet_config() -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
 					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 				],
-				1000.into(),
+				PARA_ID.into(),
 			)
 		},
 		// Bootnodes
@@ -164,24 +190,54 @@ pub fn local_testnet_config() -> ChainSpec {
 		// Telemetry
 		None,
 		// Protocol ID
-		Some("template-local"),
+		Some("aband_testnet"),
 		// Fork ID
 		None,
 		// Properties
-		Some(properties),
+		Some(get_properties()),
 		// Extensions
 		Extensions {
 			relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
-			para_id: 1000,
+			para_id: PARA_ID,
 		},
 	)
 }
 
 fn testnet_genesis(
-	invulnerables: Vec<(AccountId, AuraId)>,
-	endowed_accounts: Vec<AccountId>,
+	mut invulnerables: Vec<(AccountId, AccountId, NimbusId)>,
+	initial_nominators: Vec<AccountId>,
+	mut endowed_accounts: Vec<AccountId>,
 	id: ParaId,
 ) -> parachain_template_runtime::GenesisConfig {
+	// endow all authorities and nominators.
+	invulnerables
+		.iter()
+		.map(|x| &x.0)
+		.chain(initial_nominators.iter())
+		.for_each(|x| {
+			if !endowed_accounts.contains(x) {
+				endowed_accounts.push(x.clone())
+			}
+		});
+
+	// stakers: all validators and nominators.
+	let mut rng = rand::thread_rng();
+	let stakers = invulnerables
+		.iter()
+		.map(|x| (x.0.clone(), x.1.clone(), STASH, StakerStatus::Validator))
+		.chain(initial_nominators.iter().map(|x| {
+			let limit = (MaxNominations::get() as usize).min(invulnerables.len());
+			let count = rng.gen::<usize>() % limit;
+			let nominations = invulnerables
+				.as_slice()
+				.choose_multiple(&mut rng, count)
+				.into_iter()
+				.map(|choice| choice.0.clone())
+				.collect::<Vec<_>>();
+			(x.clone(), x.clone(), STASH, StakerStatus::Nominator(nominations))
+		}))
+		.collect::<Vec<_>>();
+
 	parachain_template_runtime::GenesisConfig {
 		system: parachain_template_runtime::SystemConfig {
 			code: parachain_template_runtime::WASM_BINARY
@@ -192,30 +248,58 @@ fn testnet_genesis(
 			balances: endowed_accounts.iter().cloned().map(|k| (k, 1 << 60)).collect(),
 		},
 		parachain_info: parachain_template_runtime::ParachainInfoConfig { parachain_id: id },
-		collator_selection: parachain_template_runtime::CollatorSelectionConfig {
-			invulnerables: invulnerables.iter().cloned().map(|(acc, _)| acc).collect(),
-			candidacy_bond: EXISTENTIAL_DEPOSIT * 16,
-			..Default::default()
-		},
+		// collator_selection: parachain_template_runtime::CollatorSelectionConfig {
+		// 	invulnerables: invulnerables.iter().cloned().map(|(acc, _)| acc).collect(),
+		// 	candidacy_bond: EXISTENTIAL_DEPOSIT * 16,
+		// 	..Default::default()
+		// },
 		session: parachain_template_runtime::SessionConfig {
 			keys: invulnerables
+				.clone()
 				.into_iter()
-				.map(|(acc, aura)| {
+				.map(|(acc, _, nimbus)| {
 					(
-						acc.clone(),                 // account id
-						acc,                         // validator id
-						template_session_keys(aura), // session keys
+						acc.clone(),                   // account id
+						acc,                           // validator id
+						template_session_keys(nimbus), // session keys
 					)
 				})
 				.collect(),
 		},
 		// no need to pass anything to aura, in fact it will panic if we do. Session will take care
 		// of this.
-		aura: Default::default(),
-		aura_ext: Default::default(),
+		// aura: Default::default(),
+		// aura_ext: Default::default(),
 		parachain_system: Default::default(),
 		polkadot_xcm: parachain_template_runtime::PolkadotXcmConfig {
 			safe_xcm_version: Some(SAFE_XCM_VERSION),
+		},
+		author_filter: parachain_template_runtime::AuthorFilterConfig {
+			eligible_count: EligibilityValue::default(),
+		},
+		validators: parachain_template_runtime::ValidatorsConfig {
+			mapping: invulnerables
+				.clone()
+				.iter()
+				.map(|(x, y, z)| (x.clone(), z.clone()))
+				.collect::<Vec<(AccountId, NimbusId)>>()
+				.to_vec(),
+		},
+		staking: StakingConfig {
+			validator_count: invulnerables.len() as u32,
+			minimum_validator_count: invulnerables.len() as u32,
+			invulnerables: invulnerables.iter().map(|x| x.0.clone()).collect(),
+			slash_reward_fraction: Perbill::from_percent(10),
+			stakers,
+			..Default::default()
+		},
+		council: CouncilConfig::default(),
+		technical_committee: TechnicalCommitteeConfig::default(),
+		treasury: Default::default(),
+		nomination_pools: NominationPoolsConfig {
+			min_create_bond: 10 * UNIT,
+			min_join_bond: 1 * UNIT,
+			..Default::default()
 		},
 	}
 }

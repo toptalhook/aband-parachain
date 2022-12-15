@@ -174,8 +174,7 @@ impl xcm_executor::Config for XcmConfig {
 	type LocationInverter = LocationInverter<Ancestry>;
 	type Barrier = Barrier;
 	type Weigher = FixedWeightBounds<UnitWeightCost, RuntimeCall, MaxInstructions>;
-	type Trader =
-		UsingComponents<WeightToFee, RelayLocation, AccountId, Balances, ToAuthor<Runtime>>;
+	type Trader = UsingComponents<WeightToFee, RelayLocation, AccountId, Balances, ()>; // fixme
 	type ResponseHandler = PolkadotXcm;
 	type AssetTrap = PolkadotXcm;
 	type AssetClaims = PolkadotXcm;

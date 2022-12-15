@@ -1,0 +1,3 @@
+[submodule "consensus"]
+	path = consensus
+	url = https://github.com/PureStake/nimbus

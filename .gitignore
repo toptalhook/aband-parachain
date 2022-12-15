@@ -16,3 +16,6 @@
 .DS_Store
 .idea
 .vscode
+
+polkadot-launch/*.log
+polkadot-launch/rococo-local*

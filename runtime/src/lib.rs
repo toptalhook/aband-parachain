@@ -16,7 +16,6 @@ pub mod collective;
 mod local;
 
 use collective::*;
-use local::*;
 pub use primitives::{constants::*, origin::*, types::*};
 use cumulus_pallet_parachain_system::RelayNumberStrictlyIncreases;
 pub use frame_election_provider_support::{
@@ -65,7 +64,6 @@ use xcm_config::{XcmConfig, XcmOriginToTransactDispatchOrigin};
 use polkadot_runtime_common::{BlockHashCount, SlowAdjustingFeeUpdate};
 use primitives::weights::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight};
 // XCM Imports
-use xcm::latest::prelude::BodyId;
 use xcm_executor::XcmExecutor;
 
 #[sp_version::runtime_version]
@@ -250,13 +248,13 @@ parameter_types! {
 
 parameter_types! {
 	pub const ProposalBond: Permill = Permill::from_percent(5);
-	pub const ProposalBondMinimum: Balance = 1 * UNIT;
-	pub const SpendPeriod: BlockNumber = 1 * DAYS;
+	pub const ProposalBondMinimum: Balance = UNIT;
+	pub const SpendPeriod: BlockNumber = DAYS;
 	pub const Burn: Permill = Permill::from_percent(50);
-	pub const TipCountdown: BlockNumber = 1 * DAYS;
+	pub const TipCountdown: BlockNumber = DAYS;
 	pub const TipFindersFee: Percent = Percent::from_percent(20);
-	pub const TipReportDepositBase: Balance = 1 * UNIT;
-	pub const DataDepositPerByte: Balance = 1 * MILLIUNIT;
+	pub const TipReportDepositBase: Balance = UNIT;
+	pub const DataDepositPerByte: Balance = MILLIUNIT;
 	pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
 	pub const MaximumReasonLength: u32 = 300;
 	pub const MaxApprovals: u32 = 100;

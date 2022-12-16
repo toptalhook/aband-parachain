@@ -1,7 +1,7 @@
+#![allow(deprecated)]
 use frame_support::pallet;
-
 use frame_support::traits::OneSessionHandler;
-use nimbus_primitives::{NimbusId, NIMBUS_ENGINE_ID};
+use nimbus_primitives::{NimbusId};
 pub use pallet::*;
 use sp_std::prelude::Vec;
 
@@ -81,7 +81,7 @@ pub mod pallet {
 
 	impl<T: Config> AccountLookup<T::AccountId> for Pallet<T> {
 		fn lookup_account(author: &NimbusId) -> Option<T::AccountId> {
-			Mapping::<T>::get(&author)
+			Mapping::<T>::get(author)
 		}
 	}
 }
@@ -89,26 +89,26 @@ pub mod pallet {
 impl<T: Config> OneSessionHandler<T::AccountId> for Pallet<T> {
 	type Key = NimbusId;
 
-	fn on_genesis_session<'a, I: 'a>(validators: I)
+	fn on_genesis_session<'a, I: 'a>(_validators: I)
 	where
 		I: Iterator<Item = (&'a T::AccountId, NimbusId)>,
 	{
 	}
 
-	fn on_new_session<'a, I: 'a>(changed: bool, validators: I, _queued_validators: I)
+	fn on_new_session<'a, I: 'a>(_changed: bool, validators: I, _queued_validators: I)
 	where
 		I: Iterator<Item = (&'a T::AccountId, NimbusId)>,
 	{
 		let authorities = validators.map(|(n, k)| (n, k)).collect::<Vec<_>>();
-		if authorities.len() > 0 {
+		if !authorities.is_empty() {
 			StoredAccounts::<T>::kill();
 			Mapping::<T>::remove_all(None);
 			authorities.iter().for_each(|(x, y)| {
-				StoredAccounts::<T>::append(x.clone());
-				Mapping::<T>::insert(y, x.clone())
+				StoredAccounts::<T>::append(x);
+				Mapping::<T>::insert(y, x)
 			})
 		}
 	}
 
-	fn on_disabled(i: u32) {}
+	fn on_disabled(_i: u32) {}
 }

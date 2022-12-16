@@ -2,8 +2,8 @@ use cumulus_primitives_core::ParaId;
 use nimbus_primitives::NimbusId;
 use pallet_author_slot_filter::EligibilityValue;
 use parachain_template_runtime::{
-	AccountId, AuraId, Balance, CouncilConfig, MaxNominations, NominationPoolsConfig, Signature,
-	StakerStatus, StakingConfig, TechnicalCommitteeConfig, EXISTENTIAL_DEPOSIT, UNIT,
+	AccountId, Balance, CouncilConfig, MaxNominations, NominationPoolsConfig, Signature,
+	StakerStatus, StakingConfig, TechnicalCommitteeConfig, UNIT,
 };
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup, Properties};
 use sc_service::ChainType;
@@ -13,7 +13,7 @@ use sp_core::{sr25519, Pair, Public};
 use rand::{seq::SliceRandom, Rng};
 use sp_runtime::{
 	traits::{IdentifyAccount, Verify},
-	Perbill, Permill,
+	Perbill,
 };
 
 pub const PARA_ID: u32 = 2022;
@@ -204,7 +204,7 @@ pub fn local_testnet_config() -> ChainSpec {
 }
 
 fn testnet_genesis(
-	mut invulnerables: Vec<(AccountId, AccountId, NimbusId)>,
+	invulnerables: Vec<(AccountId, AccountId, NimbusId)>,
 	initial_nominators: Vec<AccountId>,
 	mut endowed_accounts: Vec<AccountId>,
 	id: ParaId,
@@ -279,9 +279,8 @@ fn testnet_genesis(
 		},
 		validators: parachain_template_runtime::ValidatorsConfig {
 			mapping: invulnerables
-				.clone()
 				.iter()
-				.map(|(x, y, z)| (x.clone(), z.clone()))
+				.map(|(x, _y, z)| (x.clone(), z.clone()))
 				.collect::<Vec<(AccountId, NimbusId)>>()
 				.to_vec(),
 		},
@@ -298,7 +297,7 @@ fn testnet_genesis(
 		treasury: Default::default(),
 		nomination_pools: NominationPoolsConfig {
 			min_create_bond: 10 * UNIT,
-			min_join_bond: 1 * UNIT,
+			min_join_bond: UNIT,
 			..Default::default()
 		},
 	}

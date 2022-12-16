@@ -26,9 +26,9 @@ parameter_types! {
 	pub const UnsignedPhase: u32 = EPOCH_DURATION_IN_BLOCKS / 4;
 
 	// signed config
-	pub const SignedRewardBase: Balance = 1 * UNIT;
-	pub const SignedDepositBase: Balance = 1 * UNIT;
-	pub const SignedDepositByte: Balance = 1 * MILLIUNIT;
+	pub const SignedRewardBase: Balance = UNIT;
+	pub const SignedDepositBase: Balance = UNIT;
+	pub const SignedDepositByte: Balance = MILLIUNIT;
 
 	pub BetterUnsignedThreshold: Perbill = Perbill::from_rational(1u32, 10_000);
 

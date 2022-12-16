@@ -1,3 +1,7 @@
+#![allow(clippy::useless_conversion)]
+#![allow(clippy::unnecessary_lazy_evaluations)]
+#![allow(clippy::needless_return)]
+
 use std::net::SocketAddr;
 
 use codec::Encode;

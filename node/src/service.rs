@@ -1,5 +1,12 @@
 //! Service and ServiceFactory implementation. Specialized wrapper over substrate service.
 
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+#![allow(clippy::large_enum_variant)]
+#![allow(clippy::needless_return)]
+#![allow(clippy::useless_conversion)]
+#![allow(clippy::unnecessary_lazy_evaluations)]
+
 // std
 use std::{sync::Arc, time::Duration};
 

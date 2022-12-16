@@ -95,22 +95,24 @@ construct_runtime!(
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent} = 2,
 		ParachainInfo: parachain_info::{Pallet, Storage, Config} = 3,
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage} = 4,
+		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 5,
+		Historical: pallet_session_historical::{Pallet} = 6,
 
 		// Monetary stuff.
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 10,
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>} = 11,
 		Treasury: pallet_treasury = 12,
 
-		// nimbus support
-		AuthorInherent: pallet_author_inherent::{Pallet, Call, Storage, Inherent} = 23,
-		AuthorFilter: pallet_author_slot_filter::{Pallet, Storage, Event, Config} = 24,
-		Validators: validators::{Pallet, Storage, Config<T>} = 25,
-
 		// XCM helpers.
-		XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 30,
-		PolkadotXcm: pallet_xcm::{Pallet, Call, Event<T>, Origin, Config} = 31,
-		CumulusXcm: cumulus_pallet_xcm::{Pallet, Event<T>, Origin} = 32,
-		DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 33,
+		XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 20,
+		PolkadotXcm: pallet_xcm::{Pallet, Call, Event<T>, Origin, Config} = 21,
+		CumulusXcm: cumulus_pallet_xcm::{Pallet, Event<T>, Origin} = 22,
+		DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 23,
+
+		// consensus
+		AuthorInherent: pallet_author_inherent::{Pallet, Call, Storage, Inherent} = 30,
+		AuthorFilter: pallet_author_slot_filter::{Pallet, Storage, Event, Config} = 31,
+		Validators: validators::{Pallet, Storage, Config<T>} = 32,
 
 		// collective
 		Council: pallet_collective::<Instance1> = 41,
@@ -122,12 +124,8 @@ construct_runtime!(
 		VoterList: pallet_bags_list::<Instance1> = 54,
 		NominationPools: pallet_nomination_pools = 55,
 
-		// session
-		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 61,
-		Historical: pallet_session_historical::{Pallet} = 62,
-
-		// Include the custom logic from the pallet-template in the runtime.
-		TemplateModule: pallet_template,
+		// local
+		TemplateModule: pallet_template = 60,
 	}
 );
 

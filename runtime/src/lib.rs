@@ -13,8 +13,10 @@ pub mod voter_bags;
 pub mod xcm_config;
 mod primitives;
 pub mod collective;
+mod local;
 
 use collective::*;
+use local::*;
 pub use primitives::{constants::*, origin::*, types::*};
 use cumulus_pallet_parachain_system::RelayNumberStrictlyIncreases;
 pub use frame_election_provider_support::{
@@ -123,6 +125,9 @@ construct_runtime!(
 		// session
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 61,
 		Historical: pallet_session_historical::{Pallet} = 62,
+
+		// Include the custom logic from the pallet-template in the runtime.
+		TemplateModule: pallet_template,
 	}
 );
 

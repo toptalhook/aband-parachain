@@ -21,15 +21,13 @@ log = { version = "0.4.17", default-features = false }
 scale-info = { version = "2.2.0", default-features = false, features = ["derive"] }
 smallvec = "1.10.0"
 
-## Local
-#pallet-template = { path = "../pallets/template", default-features = false }
+# Local
+pallet-template = { path = "../pallets/template", default-features = false }
 
 # nimbus
 nimbus-primitives = { path = "../consensus/nimbus-primitives", default-features = false}
-pallet-aura-style-filter = { path = "../consensus/pallets/aura-style-filter", default-features = false}
 pallet-author-inherent = { path = "../consensus/pallets/author-inherent", default-features = false}
 pallet-author-slot-filter = { path = "../consensus/pallets/author-slot-filter", default-features = false}
-nimbus-runtime = { path = "../consensus/parachain-template/runtime", default-features = false, package = "parachain-template-runtime"}
 # Substrate
 frame-benchmarking = { git = "https://github.com/paritytech/substrate", default-features = false, optional = true, branch = "polkadot-v0.9.32" }
 frame-executive = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.32" }
@@ -121,7 +119,7 @@ std = [
 	"pallet-collator-selection/std",
 	"pallet-session/std",
 	"pallet-sudo/std",
-#	"pallet-template/std",
+	"pallet-template/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
 	"pallet-transaction-payment/std",
@@ -148,10 +146,8 @@ std = [
 	"xcm/std",
 	# nimbus
 	"nimbus-primitives/std",
-	"pallet-aura-style-filter/std",
 	"pallet-author-inherent/std",
 	"pallet-author-slot-filter/std",
-	"nimbus-runtime/std",
 	# staking
 	"pallet-session-benchmarking/std",
 	"pallet-staking/std",

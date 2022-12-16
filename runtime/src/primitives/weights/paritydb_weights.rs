@@ -32,7 +32,7 @@ pub mod constants {
 
 	#[cfg(test)]
 	mod test_db_weights {
-		use super::constants::ParityDbWeight as W;
+		use frame_support::weights::constants::ParityDbWeight as W;
 		use frame_support::weights::constants;
 
 		/// Checks that all weights exist and have sane values.

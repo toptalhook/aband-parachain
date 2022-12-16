@@ -32,7 +32,7 @@ pub mod constants {
 
 	#[cfg(test)]
 	mod test_db_weights {
-		use super::constants::RocksDbWeight as W;
+		use frame_support::weights::constants::RocksDbWeight as W;
 		use frame_support::weights::constants;
 
 		/// Checks that all weights exist and have sane values.

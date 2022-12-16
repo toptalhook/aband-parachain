@@ -1,4 +1,4 @@
-use super::*;
+use crate::*;
 
 /// This determines the average expected block time that we are targeting.
 /// Blocks will be produced at a minimum duration defined by `SLOT_DURATION`.

@@ -7,40 +7,35 @@
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 mod consensus;
-mod constants;
-mod origin;
 mod staking;
-mod types;
 mod validators;
 pub mod voter_bags;
-mod weights;
 pub mod xcm_config;
-mod collective;
+mod primitives;
+pub mod collective;
 
-pub use consensus::*;
-pub use constants::*;
-pub use collective::*;
+use collective::*;
+pub use primitives::{constants::*, origin::*, types::*};
 use cumulus_pallet_parachain_system::RelayNumberStrictlyIncreases;
 pub use frame_election_provider_support::{
-	onchain, BalancingConfig, ElectionDataProvider, SequentialPhragmen, VoteWeight,
+	BalancingConfig, ElectionDataProvider, onchain, SequentialPhragmen, VoteWeight,
 };
 use frame_support::{
 	construct_runtime,
 	dispatch::DispatchClass,
+	PalletId,
 	parameter_types,
 	traits::{ConstU16, ConstU32, EitherOfDiverse, Everything, OnInitialize, U128CurrencyToVote},
 	weights::{
-		constants::WEIGHT_PER_SECOND, ConstantMultiplier, Weight, WeightToFeeCoefficient,
+		ConstantMultiplier, constants::WEIGHT_PER_SECOND, Weight, WeightToFeeCoefficient,
 		WeightToFeeCoefficients, WeightToFeePolynomial,
 	},
-	PalletId,
 };
 use frame_system::{
-	limits::{BlockLength, BlockWeights},
 	EnsureRoot,
+	limits::{BlockLength, BlockWeights},
 };
 use nimbus_primitives::NimbusId;
-pub use origin::*;
 use pallet_session::historical::{self as pallet_session_historical};
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
@@ -51,23 +46,22 @@ use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{
+	ApplyExtrinsicResult,
 	create_runtime_str,
-	curve::PiecewiseLinear,
-	generic, impl_opaque_keys,
-	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, Get, IdentifyAccount, Verify},
-	transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity},
-	ApplyExtrinsicResult, FixedU128, MultiAddress, MultiSignature, Perbill, Percent, Permill,
+	curve::PiecewiseLinear, FixedU128,
+	generic,
+	impl_opaque_keys,
+	MultiAddress, MultiSignature, Perbill, Percent, Permill, traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, Get, IdentifyAccount, Verify}, transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity},
 };
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 pub use staking::*;
-pub use types::*;
 use xcm_config::{XcmConfig, XcmOriginToTransactDispatchOrigin};
 // Polkadot imports
 use polkadot_runtime_common::{BlockHashCount, SlowAdjustingFeeUpdate};
-use weights::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight};
+use primitives::weights::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight};
 // XCM Imports
 use xcm::latest::prelude::BodyId;
 use xcm_executor::XcmExecutor;

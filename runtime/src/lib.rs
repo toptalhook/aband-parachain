@@ -8,7 +8,6 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 mod consensus;
 mod staking;
-mod validators;
 pub mod voter_bags;
 pub mod xcm_config;
 mod primitives;
@@ -21,6 +20,7 @@ use cumulus_pallet_parachain_system::RelayNumberStrictlyIncreases;
 pub use frame_election_provider_support::{
 	BalancingConfig, ElectionDataProvider, onchain, SequentialPhragmen, VoteWeight,
 };
+pub use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use frame_support::{
 	construct_runtime,
 	dispatch::DispatchClass,
@@ -110,7 +110,8 @@ construct_runtime!(
 		// consensus
 		AuthorInherent: pallet_author_inherent::{Pallet, Call, Storage, Inherent} = 30,
 		AuthorFilter: pallet_author_slot_filter::{Pallet, Storage, Event, Config} = 31,
-		Validators: validators::{Pallet, Storage, Config<T>} = 32,
+		Collators: pallet_collators::{Pallet, Storage, Config<T>} = 32,
+		AuthorityDiscovery: pallet_authority_discovery = 33,
 
 		// collective
 		Council: pallet_collective::<Instance1> = 41,
@@ -283,6 +284,10 @@ impl pallet_treasury::Config for Runtime {
 	type WeightInfo = pallet_treasury::weights::SubstrateWeight<Runtime>;
 	type MaxApprovals = MaxApprovals;
 	type SpendOrigin = frame_support::traits::NeverEnsureOrigin<u128>;
+}
+
+impl pallet_authority_discovery::Config for Runtime {
+	type MaxAuthorities = MaxAuthorities;
 }
 
 impl pallet_timestamp::Config for Runtime {
@@ -478,6 +483,12 @@ impl_runtime_apis! {
 			encoded: Vec<u8>,
 		) -> Option<Vec<(Vec<u8>, KeyTypeId)>> {
 			SessionKeys::decode_into_raw_public_keys(&encoded)
+		}
+	}
+
+	impl sp_authority_discovery::AuthorityDiscoveryApi<Block> for Runtime {
+		fn authorities() -> Vec<AuthorityDiscoveryId> {
+			AuthorityDiscovery::authorities()
 		}
 	}
 

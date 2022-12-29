@@ -2,9 +2,12 @@ use cumulus_primitives_core::ParaId;
 use nimbus_primitives::NimbusId;
 use pallet_author_slot_filter::EligibilityValue;
 use parachain_template_runtime::{
+	AuthorityDiscoveryId,
 	AccountId, Balance, CouncilConfig, MaxNominations, NominationPoolsConfig, Signature,
 	StakerStatus, StakingConfig, TechnicalCommitteeConfig, UNIT,
+	AuthorityDiscoveryConfig,
 };
+use sc_telemetry::TelemetryEndpoints;
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup, Properties};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
@@ -24,6 +27,8 @@ pub type ChainSpec =
 
 /// The default XCM version to set in genesis config.
 const SAFE_XCM_VERSION: u32 = xcm::prelude::XCM_VERSION;
+
+const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
 
 /// Helper function to generate a crypto pair from seed
 pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
@@ -65,6 +70,13 @@ pub fn get_pair_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair
 		.public()
 }
 
+fn get_telemetry_endpoints() -> Option<TelemetryEndpoints> {
+	Some(
+		TelemetryEndpoints::new(vec![(STAGING_TELEMETRY_URL.to_string(), 0)])
+			.expect("Staging telemetry url is valid; qed"),
+	)
+}
+
 /// Helper function to generate an account ID from seed
 pub fn get_account_id_from_seed<TPublic: Public>(seed: &str) -> AccountId
 where
@@ -76,8 +88,8 @@ where
 /// Generate the session keys from individual elements.
 ///
 /// The input must be a tuple of individual keys (a single arg for now since we have just one key).
-pub fn template_session_keys(keys: NimbusId) -> parachain_template_runtime::SessionKeys {
-	parachain_template_runtime::SessionKeys { nimbus: keys }
+pub fn template_session_keys(keys: (NimbusId, AuthorityDiscoveryId)) -> parachain_template_runtime::SessionKeys {
+	parachain_template_runtime::SessionKeys { nimbus: keys.0, authority_discovery: keys.1}
 }
 
 const ENDOWMENT: Balance = 10_000_000 * UNIT;
@@ -103,14 +115,16 @@ pub fn development_config() -> ChainSpec {
 				// initial collators.
 				vec![
 					(
-						get_account_id_from_seed::<sr25519::Public>("Alice"),
+						get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
 						get_account_id_from_seed::<sr25519::Public>("Alice"),
 						get_collator_keys_from_seed("Alice"),
+						get_pair_from_seed::<AuthorityDiscoveryId>("Alice")
 					),
 					(
+						get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
 						get_account_id_from_seed::<sr25519::Public>("Bob"),
-						get_account_id_from_seed::<sr25519::Public>("Alice"),
 						get_collator_keys_from_seed("Bob"),
+						get_pair_from_seed::<AuthorityDiscoveryId>("Bob")
 					),
 				],
 				vec![],
@@ -132,7 +146,7 @@ pub fn development_config() -> ChainSpec {
 			)
 		},
 		Vec::new(),
-		None,
+		get_telemetry_endpoints(),
 		None,
 		None,
 		Some(get_properties()),
@@ -157,14 +171,16 @@ pub fn local_testnet_config() -> ChainSpec {
 				// initial collators.
 				vec![
 					(
-						get_account_id_from_seed::<sr25519::Public>("Alice"),
+						get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
 						get_account_id_from_seed::<sr25519::Public>("Alice"),
 						get_collator_keys_from_seed("Alice"),
+						get_pair_from_seed::<AuthorityDiscoveryId>("Alice")
 					),
 					(
-						get_account_id_from_seed::<sr25519::Public>("Bob"),
+						get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
 						get_account_id_from_seed::<sr25519::Public>("Bob"),
 						get_collator_keys_from_seed("Bob"),
+						get_pair_from_seed::<AuthorityDiscoveryId>("Bob")
 					),
 				],
 				vec![],
@@ -188,7 +204,7 @@ pub fn local_testnet_config() -> ChainSpec {
 		// Bootnodes
 		Vec::new(),
 		// Telemetry
-		None,
+		get_telemetry_endpoints(),
 		// Protocol ID
 		Some("aband_testnet"),
 		// Fork ID
@@ -204,7 +220,7 @@ pub fn local_testnet_config() -> ChainSpec {
 }
 
 fn testnet_genesis(
-	invulnerables: Vec<(AccountId, AccountId, NimbusId)>,
+	invulnerables: Vec<(AccountId, AccountId, NimbusId, AuthorityDiscoveryId)>,
 	initial_nominators: Vec<AccountId>,
 	mut endowed_accounts: Vec<AccountId>,
 	id: ParaId,
@@ -257,11 +273,11 @@ fn testnet_genesis(
 			keys: invulnerables
 				.clone()
 				.into_iter()
-				.map(|(acc, _, nimbus)| {
+				.map(|(acc, _, nimbus, authority_discovery_id)| {
 					(
 						acc.clone(),                   // account id
 						acc,                           // validator id
-						template_session_keys(nimbus), // session keys
+						template_session_keys((nimbus, authority_discovery_id)), // session keys
 					)
 				})
 				.collect(),
@@ -277,10 +293,10 @@ fn testnet_genesis(
 		author_filter: parachain_template_runtime::AuthorFilterConfig {
 			eligible_count: EligibilityValue::default(),
 		},
-		validators: parachain_template_runtime::ValidatorsConfig {
+		collators: parachain_template_runtime::CollatorsConfig {
 			mapping: invulnerables
 				.iter()
-				.map(|(x, _y, z)| (x.clone(), z.clone()))
+				.map(|(x, _y, z, _)| (x.clone(), z.clone()))
 				.collect::<Vec<(AccountId, NimbusId)>>()
 				.to_vec(),
 		},
@@ -292,6 +308,8 @@ fn testnet_genesis(
 			stakers,
 			..Default::default()
 		},
+		authority_discovery: AuthorityDiscoveryConfig::default(),
+
 		council: CouncilConfig::default(),
 		technical_committee: TechnicalCommitteeConfig::default(),
 		treasury: Default::default(),

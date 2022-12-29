@@ -109,10 +109,12 @@ dependencies = [
  "pallet-aura",
  "pallet-author-inherent",
  "pallet-author-slot-filter",
+ "pallet-authority-discovery",
  "pallet-authorship",
  "pallet-bags-list",
  "pallet-balances",
  "pallet-collator-selection",
+ "pallet-collators",
  "pallet-collective",
  "pallet-election-provider-multi-phase",
  "pallet-nomination-pools",
@@ -136,6 +138,7 @@ dependencies = [
  "scale-info",
  "smallvec",
  "sp-api",
+ "sp-authority-discovery",
  "sp-block-builder",
  "sp-consensus-aura",
  "sp-core",
@@ -5256,6 +5259,22 @@ dependencies = [
  "scale-info",
  "sp-runtime",
  "sp-staking",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-collators"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "nimbus-primitives",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-io",
+ "sp-runtime",
  "sp-std",
 ]
 

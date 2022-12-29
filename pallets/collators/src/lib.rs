@@ -1,3 +1,5 @@
+#![cfg_attr(not(feature = "std"), no_std)]
+
 #![allow(deprecated)]
 use frame_support::pallet;
 use frame_support::traits::OneSessionHandler;
@@ -14,12 +16,10 @@ pub mod pallet {
 	use nimbus_primitives::{AccountLookup, CanAuthor, NimbusId};
 	use sp_std::vec::Vec;
 
-	/// The Account Set pallet
 	#[pallet::pallet]
 	#[pallet::without_storage_info]
 	pub struct Pallet<T>(PhantomData<T>);
 
-	/// Configuration trait of this pallet.
 	#[pallet::config]
 	pub trait Config: frame_system::Config {}
 
@@ -27,13 +27,13 @@ pub mod pallet {
 		type Public = NimbusId;
 	}
 
-	/// The set of accounts that is stored in this pallet.
+	/// The set of collators.
 	#[pallet::storage]
-	pub type StoredAccounts<T: Config> = StorageValue<_, Vec<T::AccountId>, ValueQuery>;
+	pub type Collators<T: Config> = StorageValue<_, Vec<T::AccountId>, ValueQuery>;
 
 	impl<T: Config> Get<Vec<T::AccountId>> for Pallet<T> {
 		fn get() -> Vec<T::AccountId> {
-			StoredAccounts::<T>::get()
+			Collators::<T>::get()
 		}
 	}
 
@@ -65,17 +65,15 @@ pub mod pallet {
 			}
 			for (account_id, author_id) in &self.mapping {
 				Mapping::<T>::insert(author_id, account_id);
-				StoredAccounts::<T>::append(account_id);
+				Collators::<T>::append(account_id);
 			}
 		}
 	}
 
-	/// This pallet is compatible with nimbus's author filtering system. Any account stored in this pallet
-	/// is a valid author. Notice that this implementation does not have an inner filter, so it
-	/// can only be the beginning of the nimbus filter pipeline.
+
 	impl<T: Config> CanAuthor<T::AccountId> for Pallet<T> {
 		fn can_author(author: &T::AccountId, _slot: &u32) -> bool {
-			StoredAccounts::<T>::get().contains(author)
+			Collators::<T>::get().contains(author)
 		}
 	}
 
@@ -90,21 +88,21 @@ impl<T: Config> OneSessionHandler<T::AccountId> for Pallet<T> {
 	type Key = NimbusId;
 
 	fn on_genesis_session<'a, I: 'a>(_validators: I)
-	where
-		I: Iterator<Item = (&'a T::AccountId, NimbusId)>,
+		where
+			I: Iterator<Item = (&'a T::AccountId, NimbusId)>,
 	{
 	}
 
 	fn on_new_session<'a, I: 'a>(_changed: bool, validators: I, _queued_validators: I)
-	where
-		I: Iterator<Item = (&'a T::AccountId, NimbusId)>,
+		where
+			I: Iterator<Item = (&'a T::AccountId, NimbusId)>,
 	{
 		let authorities = validators.map(|(n, k)| (n, k)).collect::<Vec<_>>();
 		if !authorities.is_empty() {
-			StoredAccounts::<T>::kill();
+			Collators::<T>::kill();
 			Mapping::<T>::remove_all(None);
 			authorities.iter().for_each(|(x, y)| {
-				StoredAccounts::<T>::append(x);
+				Collators::<T>::append(x);
 				Mapping::<T>::insert(y, x)
 			})
 		}

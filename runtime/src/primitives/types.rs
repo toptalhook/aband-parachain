@@ -81,6 +81,7 @@ pub mod opaque {
 
 impl_opaque_keys! {
 	pub struct SessionKeys {
-		pub nimbus: Validators,
+		pub nimbus: Collators,
+		pub authority_discovery: AuthorityDiscovery,
 	}
 }

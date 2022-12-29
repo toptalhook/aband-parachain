@@ -1,0 +1,44 @@
+[package]
+name = "pallet-collators"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+log = { version = "0.4.17", default-features = false }
+codec = { package = "parity-scale-codec", version = "3.0.0", features = ["derive"], default-features = false }
+scale-info = { version = "2.2.0", default-features = false, features = ["derive"] }
+
+sp-std = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.32" }
+sp-runtime = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.32" }
+sp-io = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.32" }
+
+
+# Substrate
+frame-benchmarking = { git = "https://github.com/paritytech/substrate", default-features = false, optional = true, branch = "polkadot-v0.9.32" }
+frame-support = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.32" }
+frame-system = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.32" }
+
+# nimbus
+nimbus-primitives = { path = "../../consensus/nimbus-primitives", default-features = false}
+
+[dev-dependencies]
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "scale-info/std",
+    "frame-benchmarking/std",
+    "frame-support/std",
+    "frame-system/std",
+    "nimbus-primitives/std",
+    "sp-std/std",
+    "sp-runtime/std",
+    "log/std",
+    "sp-io/std",
+]
+
+runtime-benchmarks = ["frame-benchmarking/runtime-benchmarks"]
+try-runtime = [ "frame-support/try-runtime" ]

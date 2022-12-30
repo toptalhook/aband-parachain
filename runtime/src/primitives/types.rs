@@ -83,5 +83,6 @@ impl_opaque_keys! {
 	pub struct SessionKeys {
 		pub nimbus: Collators,
 		pub authority_discovery: AuthorityDiscovery,
+		pub im_online: ImOnline,
 	}
 }

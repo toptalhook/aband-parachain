@@ -21,6 +21,7 @@ pub use frame_election_provider_support::{
 	BalancingConfig, ElectionDataProvider, onchain, SequentialPhragmen, VoteWeight,
 };
 pub use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
+pub use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use frame_support::{
 	construct_runtime,
 	dispatch::DispatchClass,
@@ -96,6 +97,8 @@ construct_runtime!(
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 5,
 		Historical: pallet_session_historical::{Pallet} = 6,
 		Utility: pallet_utility = 7,
+		ImOnline: pallet_im_online = 8,
+		Offences: pallet_offences = 9,
 
 		// Monetary stuff.
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 10,
@@ -263,6 +266,7 @@ parameter_types! {
 	pub const MaxApprovals: u32 = 100;
 }
 
+
 impl pallet_treasury::Config for Runtime {
 	type PalletId = TreasuryPalletId;
 	type Currency = Balances;
@@ -288,16 +292,47 @@ impl pallet_treasury::Config for Runtime {
 	type SpendOrigin = frame_support::traits::NeverEnsureOrigin<u128>;
 }
 
-impl pallet_authorship::Config for Runtime {
-	type FindAuthor = AuthorInherent;
-	type UncleGenerations = UncleGenerations;
-	type FilterUncle = ();
-	type EventHandler = (Staking, );
+impl pallet_offences::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type IdentificationTuple = pallet_session::historical::IdentificationTuple<Self>;
+	type OnOffenceHandler = Staking;
 }
 
 impl pallet_authority_discovery::Config for Runtime {
 	type MaxAuthorities = MaxAuthorities;
 }
+
+parameter_types! {
+	pub const ImOnlineUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
+	/// We prioritize im-online heartbeats over election solution submission.
+	pub const StakingUnsignedPriority: TransactionPriority = TransactionPriority::max_value() / 2;
+	pub const MaxAuthorities: u32 = 100;
+	pub const MaxKeys: u32 = 10_000;
+	pub const MaxPeerInHeartbeats: u32 = 10_000;
+	pub const MaxPeerDataEncodingSize: u32 = 1_000;
+}
+
+
+impl pallet_im_online::Config for Runtime {
+	type AuthorityId = ImOnlineId;
+	type RuntimeEvent = RuntimeEvent;
+	type NextSessionRotation = (); // fixme
+	type ValidatorSet = Historical;
+	type ReportUnresponsiveness = Offences;
+	type UnsignedPriority = ImOnlineUnsignedPriority;
+	type WeightInfo = pallet_im_online::weights::SubstrateWeight<Runtime>;
+	type MaxKeys = MaxKeys;
+	type MaxPeerInHeartbeats = MaxPeerInHeartbeats;
+	type MaxPeerDataEncodingSize = MaxPeerDataEncodingSize;
+}
+
+impl pallet_authorship::Config for Runtime {
+	type FindAuthor = AuthorInherent;
+	type UncleGenerations = UncleGenerations;
+	type FilterUncle = ();
+	type EventHandler = (Staking, ImOnline); // fixme
+}
+
 
 impl pallet_timestamp::Config for Runtime {
 	/// A timestamp: milliseconds since the unix epoch.
@@ -392,7 +427,6 @@ impl cumulus_pallet_dmp_queue::Config for Runtime {
 parameter_types! {
 	pub const Period: u32 = 10 * MINUTES;
 	pub const Offset: u32 = 0;
-	pub const MaxAuthorities: u32 = 100_000;
 }
 
 impl pallet_session::Config for Runtime {

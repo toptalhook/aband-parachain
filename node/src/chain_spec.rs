@@ -3,9 +3,11 @@ use nimbus_primitives::NimbusId;
 use pallet_author_slot_filter::EligibilityValue;
 use parachain_template_runtime::{
 	AuthorityDiscoveryId,
+	ImOnlineId,
 	AccountId, Balance, CouncilConfig, MaxNominations, NominationPoolsConfig, Signature,
 	StakerStatus, StakingConfig, TechnicalCommitteeConfig, UNIT,
 	AuthorityDiscoveryConfig,
+	ImOnlineConfig,
 };
 use sc_telemetry::TelemetryEndpoints;
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup, Properties};
@@ -88,8 +90,8 @@ where
 /// Generate the session keys from individual elements.
 ///
 /// The input must be a tuple of individual keys (a single arg for now since we have just one key).
-pub fn template_session_keys(keys: (NimbusId, AuthorityDiscoveryId)) -> parachain_template_runtime::SessionKeys {
-	parachain_template_runtime::SessionKeys { nimbus: keys.0, authority_discovery: keys.1}
+pub fn template_session_keys(keys: (NimbusId, AuthorityDiscoveryId, ImOnlineId)) -> parachain_template_runtime::SessionKeys {
+	parachain_template_runtime::SessionKeys { nimbus: keys.0, authority_discovery: keys.1, im_online: keys.2}
 }
 
 const ENDOWMENT: Balance = 10_000_000 * UNIT;
@@ -118,13 +120,15 @@ pub fn development_config() -> ChainSpec {
 						get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
 						get_account_id_from_seed::<sr25519::Public>("Alice"),
 						get_collator_keys_from_seed("Alice"),
-						get_pair_from_seed::<AuthorityDiscoveryId>("Alice")
+						get_pair_from_seed::<AuthorityDiscoveryId>("Alice"),
+						get_pair_from_seed::<ImOnlineId>("Alice"),
 					),
 					(
 						get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
 						get_account_id_from_seed::<sr25519::Public>("Bob"),
 						get_collator_keys_from_seed("Bob"),
-						get_pair_from_seed::<AuthorityDiscoveryId>("Bob")
+						get_pair_from_seed::<AuthorityDiscoveryId>("Bob"),
+						get_pair_from_seed::<ImOnlineId>("Bob"),
 					),
 				],
 				vec![],
@@ -174,13 +178,15 @@ pub fn local_testnet_config() -> ChainSpec {
 						get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
 						get_account_id_from_seed::<sr25519::Public>("Alice"),
 						get_collator_keys_from_seed("Alice"),
-						get_pair_from_seed::<AuthorityDiscoveryId>("Alice")
+						get_pair_from_seed::<AuthorityDiscoveryId>("Alice"),
+						get_pair_from_seed::<ImOnlineId>("Alice")
 					),
 					(
 						get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
 						get_account_id_from_seed::<sr25519::Public>("Bob"),
 						get_collator_keys_from_seed("Bob"),
-						get_pair_from_seed::<AuthorityDiscoveryId>("Bob")
+						get_pair_from_seed::<AuthorityDiscoveryId>("Bob"),
+						get_pair_from_seed::<ImOnlineId>("Bob")
 					),
 				],
 				vec![],
@@ -220,7 +226,7 @@ pub fn local_testnet_config() -> ChainSpec {
 }
 
 fn testnet_genesis(
-	invulnerables: Vec<(AccountId, AccountId, NimbusId, AuthorityDiscoveryId)>,
+	invulnerables: Vec<(AccountId, AccountId, NimbusId, AuthorityDiscoveryId, ImOnlineId)>,
 	initial_nominators: Vec<AccountId>,
 	mut endowed_accounts: Vec<AccountId>,
 	id: ParaId,
@@ -273,19 +279,16 @@ fn testnet_genesis(
 			keys: invulnerables
 				.clone()
 				.into_iter()
-				.map(|(acc, _, nimbus, authority_discovery_id)| {
+				.map(|(acc, _, nimbus, authority_discovery_id, im_online_id)| {
 					(
 						acc.clone(),                   // account id
 						acc,                           // validator id
-						template_session_keys((nimbus, authority_discovery_id)), // session keys
+						template_session_keys((nimbus, authority_discovery_id, im_online_id)), // session keys
 					)
 				})
 				.collect(),
 		},
-		// no need to pass anything to aura, in fact it will panic if we do. Session will take care
-		// of this.
-		// aura: Default::default(),
-		// aura_ext: Default::default(),
+		im_online: ImOnlineConfig { keys: vec![] },
 		parachain_system: Default::default(),
 		polkadot_xcm: parachain_template_runtime::PolkadotXcmConfig {
 			safe_xcm_version: Some(SAFE_XCM_VERSION),
@@ -296,7 +299,7 @@ fn testnet_genesis(
 		collators: parachain_template_runtime::CollatorsConfig {
 			mapping: invulnerables
 				.iter()
-				.map(|(x, _y, z, _)| (x.clone(), z.clone()))
+				.map(|(x, _y, z, _, _)| (x.clone(), z.clone()))
 				.collect::<Vec<(AccountId, NimbusId)>>()
 				.to_vec(),
 		},

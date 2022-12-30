@@ -74,7 +74,8 @@ pallet-bags-list = { git = "https://github.com/paritytech/substrate", default-fe
 pallet-nomination-pools = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.32" }
 pallet-authority-discovery = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.32" }
 pallet-utility = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.32" }
-
+pallet-offences = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.32" }
+pallet-im-online = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.32" }
 
 # Polkadot
 pallet-xcm = { git = "https://github.com/paritytech/polkadot", default-features = false, branch = "release-v0.9.32" }
@@ -166,6 +167,8 @@ std = [
 	"sp-authority-discovery/std",
 	"pallet-authority-discovery/std",
 	"pallet-utility/std",
+	"pallet-offences/std",
+	"pallet-im-online/std",
 ]
 
 runtime-benchmarks = [

@@ -8,6 +8,7 @@ use parachain_template_runtime::{
 	StakerStatus, StakingConfig, TechnicalCommitteeConfig, UNIT,
 	AuthorityDiscoveryConfig,
 	ImOnlineConfig,
+	SudoConfig,
 };
 use sc_telemetry::TelemetryEndpoints;
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup, Properties};
@@ -293,6 +294,10 @@ fn testnet_genesis(
 		polkadot_xcm: parachain_template_runtime::PolkadotXcmConfig {
 			safe_xcm_version: Some(SAFE_XCM_VERSION),
 		},
+		sudo: SudoConfig {
+			key: Some(get_account_id_from_seed::<sr25519::Public>("Alice")),
+		},
+
 		author_filter: parachain_template_runtime::AuthorFilterConfig {
 			eligible_count: EligibilityValue::default(),
 		},

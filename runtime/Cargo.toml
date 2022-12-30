@@ -95,7 +95,6 @@ cumulus-pallet-xcmp-queue = { git = "https://github.com/paritytech/cumulus.git",
 cumulus-primitives-core = { git = "https://github.com/paritytech/cumulus.git", branch = "polkadot-v0.9.32", default-features = false }
 cumulus-primitives-timestamp = { git = "https://github.com/paritytech/cumulus.git", branch = "polkadot-v0.9.32", default-features = false }
 cumulus-primitives-utility = { git = "https://github.com/paritytech/cumulus.git", branch = "polkadot-v0.9.32", default-features = false }
-pallet-collator-selection = { git = "https://github.com/paritytech/cumulus.git", branch = "polkadot-v0.9.32", default-features = false }
 parachain-info = { git = "https://github.com/paritytech/cumulus.git", branch = "polkadot-v0.9.32", default-features = false }
 
 [features]
@@ -121,7 +120,6 @@ std = [
 	"pallet-aura/std",
 	"pallet-authorship/std",
 	"pallet-balances/std",
-	"pallet-collator-selection/std",
 	"pallet-session/std",
 	"pallet-sudo/std",
 	"pallet-template/std",
@@ -178,7 +176,6 @@ runtime-benchmarks = [
 	"frame-system-benchmarking/runtime-benchmarks",
 	"frame-system/runtime-benchmarks",
 	"pallet-balances/runtime-benchmarks",
-	"pallet-collator-selection/runtime-benchmarks",
 #	"pallet-template/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
 	"pallet-xcm/runtime-benchmarks",
@@ -200,7 +197,6 @@ try-runtime = [
 	"pallet-aura/try-runtime",
 	"pallet-authorship/try-runtime",
 	"pallet-balances/try-runtime",
-	"pallet-collator-selection/try-runtime",
 	"pallet-session/try-runtime",
 	"pallet-sudo/try-runtime",
 #	"pallet-template/try-runtime",

@@ -121,6 +121,7 @@ construct_runtime!(
 		// collective
 		Council: pallet_collective::<Instance1> = 41,
 		TechnicalCommittee: pallet_collective::<Instance2> = 42,
+		Sudo: pallet_sudo = 43,
 
 		// staking
 		Staking: pallet_staking = 51,
@@ -291,6 +292,13 @@ impl pallet_treasury::Config for Runtime {
 	type MaxApprovals = MaxApprovals;
 	type SpendOrigin = frame_support::traits::NeverEnsureOrigin<u128>;
 }
+
+
+impl pallet_sudo::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
+}
+
 
 impl pallet_offences::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;

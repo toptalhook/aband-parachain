@@ -95,6 +95,7 @@ construct_runtime!(
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage} = 4,
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 5,
 		Historical: pallet_session_historical::{Pallet} = 6,
+		Utility: pallet_utility = 7,
 
 		// Monetary stuff.
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 10,
@@ -112,6 +113,7 @@ construct_runtime!(
 		AuthorFilter: pallet_author_slot_filter::{Pallet, Storage, Event, Config} = 31,
 		Collators: pallet_collators::{Pallet, Storage, Config<T>} = 32,
 		AuthorityDiscovery: pallet_authority_discovery = 33,
+		Authorship: pallet_authorship = 34,
 
 		// collective
 		Council: pallet_collective::<Instance1> = 41,
@@ -286,6 +288,13 @@ impl pallet_treasury::Config for Runtime {
 	type SpendOrigin = frame_support::traits::NeverEnsureOrigin<u128>;
 }
 
+impl pallet_authorship::Config for Runtime {
+	type FindAuthor = AuthorInherent;
+	type UncleGenerations = UncleGenerations;
+	type FilterUncle = ();
+	type EventHandler = (Staking, );
+}
+
 impl pallet_authority_discovery::Config for Runtime {
 	type MaxAuthorities = MaxAuthorities;
 }
@@ -298,8 +307,15 @@ impl pallet_timestamp::Config for Runtime {
 	type WeightInfo = ();
 }
 
+impl pallet_utility::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
+	type PalletsOrigin = OriginCaller;
+	type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
+}
+
 parameter_types! {
-	pub const UncleGenerations: u32 = 0;
+	pub const UncleGenerations: u32 = 5;
 }
 
 parameter_types! {
@@ -374,7 +390,7 @@ impl cumulus_pallet_dmp_queue::Config for Runtime {
 }
 
 parameter_types! {
-	pub const Period: u32 = 6 * HOURS;
+	pub const Period: u32 = 10 * MINUTES;
 	pub const Offset: u32 = 0;
 	pub const MaxAuthorities: u32 = 100_000;
 }

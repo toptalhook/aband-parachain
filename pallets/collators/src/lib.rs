@@ -27,7 +27,7 @@ use frame_support::{
 	pallet,
 	traits::{EnsureOrigin, OneSessionHandler},
 };
-use nimbus_primitives::NimbusId;
+use nimbus_primitives::{NimbusId, NimbusPair};
 pub use pallet::*;
 use sp_std::prelude::Vec;
 
@@ -64,6 +64,7 @@ pub mod pallet {
 
 	/// The set of collators.
 	#[pallet::storage]
+	#[pallet::getter(fn get_collators)]
 	pub type Collators<T: Config> = StorageValue<_, Vec<T::AccountId>, ValueQuery>;
 
 	impl<T: Config> Get<Vec<T::AccountId>> for Pallet<T> {

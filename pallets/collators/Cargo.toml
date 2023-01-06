@@ -24,6 +24,7 @@ frame-system = { git = "https://github.com/paritytech/substrate", default-featur
 nimbus-primitives = { path = "../../consensus/nimbus-primitives", default-features = false}
 
 [dev-dependencies]
+sp-core = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.32" }
 
 [features]
 default = ["std"]
@@ -38,6 +39,7 @@ std = [
     "sp-runtime/std",
     "log/std",
     "sp-io/std",
+	"sp-core/std",
 ]
 
 runtime-benchmarks = ["frame-benchmarking/runtime-benchmarks"]

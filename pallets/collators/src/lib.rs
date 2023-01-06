@@ -55,6 +55,9 @@ pub mod pallet {
 		type Public = NimbusId;
 	}
 
+	/// Whether PoS is turned off.
+	///
+	/// `set_collators`, `add_collator` and `remove_collator` can be executed only when PoS is turned off.
 	#[pallet::storage]
 	#[pallet::getter(fn is_closed_pos)]
 	pub type IsClosedPoS<T: Config> = StorageValue<_, bool, ValueQuery>;
@@ -124,6 +127,7 @@ pub mod pallet {
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
+		/// Turn off PoS to use PoA.
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 		pub fn close_pos(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
 			T::AuthorityOrigin::ensure_origin(origin)?;
@@ -132,6 +136,7 @@ pub mod pallet {
 			Ok(().into())
 		}
 
+		/// Reopen PoS.
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 		pub fn open_pos(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
 			T::AuthorityOrigin::ensure_origin(origin)?;
@@ -140,6 +145,9 @@ pub mod pallet {
 			Ok(().into())
 		}
 
+		///Set collators set.
+		///
+		/// only PoA can be used.
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 		pub fn set_collators(
 			origin: OriginFor<T>,
@@ -152,6 +160,9 @@ pub mod pallet {
 			Ok(().into())
 		}
 
+		/// Add collator.
+		///
+		/// only PoA can be used.
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 		pub fn add_collator(
 			origin: OriginFor<T>,
@@ -164,6 +175,9 @@ pub mod pallet {
 			Ok(().into())
 		}
 
+		/// Remove collator.
+		///
+		/// only PoA can be used.
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 		pub fn remove_collator(
 			origin: OriginFor<T>,

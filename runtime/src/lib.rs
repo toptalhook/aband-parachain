@@ -6,54 +6,54 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
+pub mod collective;
 mod consensus;
+mod local;
+mod primitives;
 mod staking;
 pub mod voter_bags;
 pub mod xcm_config;
-mod primitives;
-pub mod collective;
-mod local;
 
 use collective::*;
-pub use primitives::{constants::*, origin::*, types::*};
 use cumulus_pallet_parachain_system::RelayNumberStrictlyIncreases;
 pub use frame_election_provider_support::{
-	BalancingConfig, ElectionDataProvider, onchain, SequentialPhragmen, VoteWeight,
+	onchain, BalancingConfig, ElectionDataProvider, SequentialPhragmen, VoteWeight,
 };
-pub use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
-pub use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use frame_support::{
 	construct_runtime,
 	dispatch::DispatchClass,
-	PalletId,
 	parameter_types,
 	traits::{ConstU16, ConstU32, EitherOfDiverse, Everything, OnInitialize, U128CurrencyToVote},
 	weights::{
-		ConstantMultiplier, constants::WEIGHT_PER_SECOND, Weight, WeightToFeeCoefficient,
+		constants::WEIGHT_PER_SECOND, ConstantMultiplier, Weight, WeightToFeeCoefficient,
 		WeightToFeeCoefficients, WeightToFeePolynomial,
 	},
+	PalletId,
 };
 use frame_system::{
-	EnsureRoot,
 	limits::{BlockLength, BlockWeights},
+	EnsureRoot,
 };
 use nimbus_primitives::NimbusId;
+pub use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_session::historical::{self as pallet_session_historical};
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
+pub use primitives::{constants::*, origin::*, types::*};
 use smallvec::smallvec;
 use sp_api::impl_runtime_apis;
+pub use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 pub use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{
-	ApplyExtrinsicResult,
 	create_runtime_str,
-	curve::PiecewiseLinear, FixedU128,
-	generic,
-	impl_opaque_keys,
-	MultiAddress, MultiSignature, Perbill, Percent, Permill, traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, Get, IdentifyAccount, Verify}, transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity},
+	curve::PiecewiseLinear,
+	generic, impl_opaque_keys,
+	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, Get, IdentifyAccount, Verify},
+	transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity},
+	ApplyExtrinsicResult, FixedU128, MultiAddress, MultiSignature, Perbill, Percent, Permill,
 };
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
@@ -114,7 +114,7 @@ construct_runtime!(
 		// consensus
 		AuthorInherent: pallet_author_inherent::{Pallet, Call, Storage, Inherent} = 30,
 		AuthorFilter: pallet_author_slot_filter::{Pallet, Storage, Event, Config} = 31,
-		Collators: pallet_collators::{Pallet, Storage, Config<T>} = 32,
+		Collators: pallet_collators::{Pallet, Storage, Config<T>, Event<T>} = 32,
 		AuthorityDiscovery: pallet_authority_discovery = 33,
 		Authorship: pallet_authorship = 34,
 
@@ -267,7 +267,6 @@ parameter_types! {
 	pub const MaxApprovals: u32 = 100;
 }
 
-
 impl pallet_treasury::Config for Runtime {
 	type PalletId = TreasuryPalletId;
 	type Currency = Balances;
@@ -293,12 +292,10 @@ impl pallet_treasury::Config for Runtime {
 	type SpendOrigin = frame_support::traits::NeverEnsureOrigin<u128>;
 }
 
-
 impl pallet_sudo::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RuntimeCall = RuntimeCall;
 }
-
 
 impl pallet_offences::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
@@ -320,7 +317,6 @@ parameter_types! {
 	pub const MaxPeerDataEncodingSize: u32 = 1_000;
 }
 
-
 impl pallet_im_online::Config for Runtime {
 	type AuthorityId = ImOnlineId;
 	type RuntimeEvent = RuntimeEvent;
@@ -340,7 +336,6 @@ impl pallet_authorship::Config for Runtime {
 	type FilterUncle = ();
 	type EventHandler = (Staking, ImOnline); // fixme
 }
-
 
 impl pallet_timestamp::Config for Runtime {
 	/// A timestamp: milliseconds since the unix epoch.

@@ -32,8 +32,8 @@ pub mod constants {
 
 	#[cfg(test)]
 	mod test_db_weights {
-		use frame_support::weights::constants::ParityDbWeight as W;
 		use frame_support::weights::constants;
+		use frame_support::weights::constants::ParityDbWeight as W;
 
 		/// Checks that all weights exist and have sane values.
 		// NOTE: If this test fails but you are sure that the generated values are fine,

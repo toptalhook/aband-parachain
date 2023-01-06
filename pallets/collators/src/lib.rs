@@ -1,16 +1,25 @@
 #![cfg_attr(not(feature = "std"), no_std)]
-
 #![allow(deprecated)]
-use frame_support::pallet;
-use frame_support::traits::OneSessionHandler;
-use nimbus_primitives::{NimbusId};
+
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
+#[cfg(test)]
+mod mock;
+#[cfg(test)]
+mod tests;
+
+use frame_support::{
+	pallet,
+	traits::{EnsureOrigin, OneSessionHandler},
+};
+use nimbus_primitives::NimbusId;
 pub use pallet::*;
 use sp_std::prelude::Vec;
 
 #[pallet]
 pub mod pallet {
-
-	use frame_support::pallet_prelude::*;
+	use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
+	use frame_system::pallet_prelude::*;
 	#[cfg(feature = "std")]
 	use log::warn;
 	use nimbus_primitives::{AccountLookup, CanAuthor, NimbusId};
@@ -21,11 +30,19 @@ pub mod pallet {
 	pub struct Pallet<T>(PhantomData<T>);
 
 	#[pallet::config]
-	pub trait Config: frame_system::Config {}
+	pub trait Config: frame_system::Config {
+		/// Because this pallet emits events, it depends on the runtime's definition of an event.
+		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+		type AuthorityOrigin: EnsureOrigin<Self::RuntimeOrigin>;
+	}
 
 	impl<T> sp_runtime::BoundToRuntimeAppPublic for Pallet<T> {
 		type Public = NimbusId;
 	}
+
+	#[pallet::storage]
+	#[pallet::getter(fn is_closed_pos)]
+	pub type IsClosedPoS<T: Config> = StorageValue<_, bool, ValueQuery>;
 
 	/// The set of collators.
 	#[pallet::storage]
@@ -42,6 +59,26 @@ pub mod pallet {
 	/// A mapping from the AuthorIds used in the consensus layer
 	/// to the AccountIds runtime.
 	pub type Mapping<T: Config> = StorageMap<_, Twox64Concat, NimbusId, T::AccountId, OptionQuery>;
+
+	#[pallet::event]
+	#[pallet::generate_deposit(pub(super) fn deposit_event)]
+	pub enum Event<T: Config> {
+		ClosePoS,
+		OpenPoS,
+		SetCollators { collators: Vec<T::AccountId> },
+		AddCollator { new_collator: T::AccountId },
+		RemoveCollator { old_collator: T::AccountId },
+	}
+
+	// Errors inform users that something went wrong.
+	#[pallet::error]
+	pub enum Error<T> {
+		/// Error names should be descriptive.
+		NoneValue,
+		/// Errors should have helpful documentation associated with them.
+		StorageOverflow,
+		ShouldUnderPoA,
+	}
 
 	#[pallet::genesis_config]
 	/// Genesis config for author mapping pallet
@@ -70,6 +107,64 @@ pub mod pallet {
 		}
 	}
 
+	#[pallet::call]
+	impl<T: Config> Pallet<T> {
+		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+		pub fn close_pos(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
+			T::AuthorityOrigin::ensure_origin(origin)?;
+			IsClosedPoS::<T>::put(true);
+			Self::deposit_event(Event::ClosePoS);
+			Ok(().into())
+		}
+
+		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+		pub fn open_pos(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
+			T::AuthorityOrigin::ensure_origin(origin)?;
+			IsClosedPoS::<T>::put(false);
+			Self::deposit_event(Event::OpenPoS);
+			Ok(().into())
+		}
+
+		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+		pub fn set_collators(
+			origin: OriginFor<T>,
+			collators: Vec<T::AccountId>,
+		) -> DispatchResultWithPostInfo {
+			T::AuthorityOrigin::ensure_origin(origin)?;
+			ensure!(Self::is_closed_pos(), Error::<T>::ShouldUnderPoA);
+			// fixme
+			Collators::<T>::put(&collators);
+			Self::deposit_event(Event::SetCollators { collators });
+			Ok(().into())
+		}
+
+		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+		pub fn add_collator(
+			origin: OriginFor<T>,
+			new_collator: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			T::AuthorityOrigin::ensure_origin(origin)?;
+			ensure!(Self::is_closed_pos(), Error::<T>::ShouldUnderPoA);
+			// fixme
+			Collators::<T>::append(&new_collator);
+			Self::deposit_event(Event::AddCollator { new_collator });
+			Ok(().into())
+		}
+
+		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+		pub fn remove_collator(
+			origin: OriginFor<T>,
+			old_collator: T::AccountId,
+		) -> DispatchResultWithPostInfo {
+			T::AuthorityOrigin::ensure_origin(origin)?;
+			ensure!(Self::is_closed_pos(), Error::<T>::ShouldUnderPoA);
+			Collators::<T>::mutate(|v| {
+				v.retain(|h| h != &old_collator);
+			});
+			Self::deposit_event(Event::RemoveCollator { old_collator });
+			Ok(().into())
+		}
+	}
 
 	impl<T: Config> CanAuthor<T::AccountId> for Pallet<T> {
 		fn can_author(author: &T::AccountId, _slot: &u32) -> bool {
@@ -87,24 +182,38 @@ pub mod pallet {
 impl<T: Config> OneSessionHandler<T::AccountId> for Pallet<T> {
 	type Key = NimbusId;
 
-	fn on_genesis_session<'a, I: 'a>(_validators: I)
-		where
-			I: Iterator<Item = (&'a T::AccountId, NimbusId)>,
-	{
-	}
-
-	fn on_new_session<'a, I: 'a>(_changed: bool, validators: I, _queued_validators: I)
-		where
-			I: Iterator<Item = (&'a T::AccountId, NimbusId)>,
+	fn on_genesis_session<'a, I: 'a>(validators: I)
+	where
+		I: Iterator<Item = (&'a T::AccountId, NimbusId)>,
 	{
 		let authorities = validators.map(|(n, k)| (n, k)).collect::<Vec<_>>();
+		assert!(!authorities.is_empty(), "authorities set is empty.");
 		if !authorities.is_empty() {
-			Collators::<T>::kill();
-			Mapping::<T>::remove_all(None);
 			authorities.iter().for_each(|(x, y)| {
 				Collators::<T>::append(x);
 				Mapping::<T>::insert(y, x)
-			})
+			});
+		}
+	}
+
+	fn on_new_session<'a, I: 'a>(_changed: bool, validators: I, _queued_validators: I)
+	where
+		I: Iterator<Item = (&'a T::AccountId, NimbusId)>,
+	{
+		let authorities = validators.map(|(n, k)| (n, k)).collect::<Vec<_>>();
+		if !authorities.is_empty() {
+			// update collators set
+			if !Self::is_closed_pos() {
+				Collators::<T>::kill();
+				Mapping::<T>::remove_all(None);
+				authorities.iter().for_each(|(x, y)| {
+					Collators::<T>::append(x);
+					Mapping::<T>::insert(y, x)
+				});
+			} else {
+				// update session-key
+				authorities.iter().for_each(|(x, y)| Mapping::<T>::insert(y, x));
+			}
 		}
 	}
 

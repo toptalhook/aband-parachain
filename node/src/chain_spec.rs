@@ -2,17 +2,13 @@ use cumulus_primitives_core::ParaId;
 use nimbus_primitives::NimbusId;
 use pallet_author_slot_filter::EligibilityValue;
 use parachain_template_runtime::{
-	AuthorityDiscoveryId,
-	ImOnlineId,
-	AccountId, Balance, CouncilConfig, MaxNominations, NominationPoolsConfig, Signature,
-	StakerStatus, StakingConfig, TechnicalCommitteeConfig, UNIT,
-	AuthorityDiscoveryConfig,
-	ImOnlineConfig,
-	SudoConfig,
+	AccountId, AuthorityDiscoveryConfig, AuthorityDiscoveryId, Balance, CouncilConfig,
+	ImOnlineConfig, ImOnlineId, MaxNominations, NominationPoolsConfig, Signature, StakerStatus,
+	StakingConfig, SudoConfig, TechnicalCommitteeConfig, UNIT,
 };
-use sc_telemetry::TelemetryEndpoints;
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup, Properties};
 use sc_service::ChainType;
+use sc_telemetry::TelemetryEndpoints;
 use serde::{Deserialize, Serialize};
 use sp_core::{sr25519, Pair, Public};
 // use rand::seq::SliceRandom;
@@ -91,8 +87,14 @@ where
 /// Generate the session keys from individual elements.
 ///
 /// The input must be a tuple of individual keys (a single arg for now since we have just one key).
-pub fn template_session_keys(keys: (NimbusId, AuthorityDiscoveryId, ImOnlineId)) -> parachain_template_runtime::SessionKeys {
-	parachain_template_runtime::SessionKeys { nimbus: keys.0, authority_discovery: keys.1, im_online: keys.2}
+pub fn template_session_keys(
+	keys: (NimbusId, AuthorityDiscoveryId, ImOnlineId),
+) -> parachain_template_runtime::SessionKeys {
+	parachain_template_runtime::SessionKeys {
+		nimbus: keys.0,
+		authority_discovery: keys.1,
+		im_online: keys.2,
+	}
 }
 
 const ENDOWMENT: Balance = 10_000_000 * UNIT;
@@ -180,14 +182,14 @@ pub fn local_testnet_config() -> ChainSpec {
 						get_account_id_from_seed::<sr25519::Public>("Alice"),
 						get_collator_keys_from_seed("Alice"),
 						get_pair_from_seed::<AuthorityDiscoveryId>("Alice"),
-						get_pair_from_seed::<ImOnlineId>("Alice")
+						get_pair_from_seed::<ImOnlineId>("Alice"),
 					),
 					(
 						get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
 						get_account_id_from_seed::<sr25519::Public>("Bob"),
 						get_collator_keys_from_seed("Bob"),
 						get_pair_from_seed::<AuthorityDiscoveryId>("Bob"),
-						get_pair_from_seed::<ImOnlineId>("Bob")
+						get_pair_from_seed::<ImOnlineId>("Bob"),
 					),
 				],
 				vec![],
@@ -271,19 +273,14 @@ fn testnet_genesis(
 			balances: endowed_accounts.iter().cloned().map(|k| (k, 1 << 60)).collect(),
 		},
 		parachain_info: parachain_template_runtime::ParachainInfoConfig { parachain_id: id },
-		// collator_selection: parachain_template_runtime::CollatorSelectionConfig {
-		// 	invulnerables: invulnerables.iter().cloned().map(|(acc, _)| acc).collect(),
-		// 	candidacy_bond: EXISTENTIAL_DEPOSIT * 16,
-		// 	..Default::default()
-		// },
 		session: parachain_template_runtime::SessionConfig {
 			keys: invulnerables
 				.clone()
 				.into_iter()
 				.map(|(acc, _, nimbus, authority_discovery_id, im_online_id)| {
 					(
-						acc.clone(),                   // account id
-						acc,                           // validator id
+						acc.clone(),                                                           // account id
+						acc,                                                                   // validator id
 						template_session_keys((nimbus, authority_discovery_id, im_online_id)), // session keys
 					)
 				})
@@ -294,20 +291,19 @@ fn testnet_genesis(
 		polkadot_xcm: parachain_template_runtime::PolkadotXcmConfig {
 			safe_xcm_version: Some(SAFE_XCM_VERSION),
 		},
-		sudo: SudoConfig {
-			key: Some(get_account_id_from_seed::<sr25519::Public>("Alice")),
-		},
+		sudo: SudoConfig { key: Some(get_account_id_from_seed::<sr25519::Public>("Alice")) },
 
 		author_filter: parachain_template_runtime::AuthorFilterConfig {
 			eligible_count: EligibilityValue::default(),
 		},
-		collators: parachain_template_runtime::CollatorsConfig {
-			mapping: invulnerables
-				.iter()
-				.map(|(x, _y, z, _, _)| (x.clone(), z.clone()))
-				.collect::<Vec<(AccountId, NimbusId)>>()
-				.to_vec(),
-		},
+		collators: parachain_template_runtime::CollatorsConfig::default(),
+		// {
+		// 	mapping: invulnerables
+		// 		.iter()
+		// 		.map(|(x, _y, z, _, _)| (x.clone(), z.clone()))
+		// 		.collect::<Vec<(AccountId, NimbusId)>>()
+		// 		.to_vec(),
+		// },
 		staking: StakingConfig {
 			validator_count: invulnerables.len() as u32,
 			minimum_validator_count: invulnerables.len() as u32,

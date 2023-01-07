@@ -28,17 +28,20 @@ mod benchmarking;
 mod mock;
 #[cfg(test)]
 mod tests;
+mod weights;
 
+use weights::WeightInfo;
 use frame_support::{
 	pallet,
 	traits::{EnsureOrigin, OneSessionHandler},
 };
-use nimbus_primitives::{NimbusId, NimbusPair};
+use nimbus_primitives::{NimbusId};
 pub use pallet::*;
 use sp_std::prelude::Vec;
 
 #[pallet]
 pub mod pallet {
+	use super::*;
 	use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
 	#[cfg(feature = "std")]
@@ -54,7 +57,10 @@ pub mod pallet {
 	pub trait Config: frame_system::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+		///
 		type AuthorityOrigin: EnsureOrigin<Self::RuntimeOrigin>;
+		///
+		type WeightInfo: WeightInfo;
 	}
 
 	impl<T> sp_runtime::BoundToRuntimeAppPublic for Pallet<T> {
@@ -135,7 +141,7 @@ pub mod pallet {
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 		/// Turn off PoS to use PoA.
-		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+		#[pallet::weight(<T as pallet::Config>::WeightInfo::close_pos())]
 		pub fn close_pos(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
 			T::AuthorityOrigin::ensure_origin(origin)?;
 			IsClosedPoS::<T>::put(true);
@@ -144,7 +150,7 @@ pub mod pallet {
 		}
 
 		/// Reopen PoS.
-		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+		#[pallet::weight(<T as pallet::Config>::WeightInfo::open_pos())]
 		pub fn open_pos(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
 			T::AuthorityOrigin::ensure_origin(origin)?;
 			IsClosedPoS::<T>::put(false);
@@ -155,7 +161,7 @@ pub mod pallet {
 		///Set collators set.
 		///
 		/// only PoA can be used.
-		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+		#[pallet::weight(<T as pallet::Config>::WeightInfo::set_collators())]
 		pub fn set_collators(
 			origin: OriginFor<T>,
 			collators: Vec<T::AccountId>,
@@ -170,7 +176,7 @@ pub mod pallet {
 		/// Add collator.
 		///
 		/// only PoA can be used.
-		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+		#[pallet::weight(<T as pallet::Config>::WeightInfo::add_collator())]
 		pub fn add_collator(
 			origin: OriginFor<T>,
 			new_collator: T::AccountId,
@@ -185,7 +191,7 @@ pub mod pallet {
 		/// Remove collator.
 		///
 		/// only PoA can be used.
-		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+		#[pallet::weight(<T as pallet::Config>::WeightInfo::remove_collator())]
 		pub fn remove_collator(
 			origin: OriginFor<T>,
 			old_collator: T::AccountId,

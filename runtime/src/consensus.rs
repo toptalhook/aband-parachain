@@ -19,4 +19,5 @@ impl pallet_author_slot_filter::Config for Runtime {
 impl pallet_collators::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type AuthorityOrigin = EnsureRootOrHalfCouncil;
+	type WeightInfo = ();
 }

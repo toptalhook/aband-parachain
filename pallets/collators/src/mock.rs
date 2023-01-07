@@ -11,6 +11,7 @@ use sp_runtime::{
 	BuildStorage,
 };
 use sp_std::{result::Result, prelude::Vec};
+use nimbus_primitives::{NimbusPair};
 
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;

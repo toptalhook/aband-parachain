@@ -3,16 +3,15 @@
 use crate as collators;
 use frame_support::traits::{ConstU16, ConstU32, ConstU64, GenesisBuild};
 use frame_system::{self, EnsureRoot};
+use nimbus_primitives::NimbusPair;
 use nimbus_primitives::{NimbusId, NimbusPair};
-use sp_core::{H256, U256, Pair};
+use sp_core::{Pair, H256, U256};
 use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
 	BuildStorage,
 };
-use sp_std::{result::Result, prelude::Vec};
-use nimbus_primitives::{NimbusPair};
-
+use sp_std::{prelude::Vec, result::Result};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 pub type Block = frame_system::mocking::MockBlock<Test>;
@@ -65,8 +64,8 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 	let mut t = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
 	collators::GenesisConfig::<Test> {
 		mapping: vec![(1, NimbusPair::from_seed(&U256::from(1).into()).public())],
-	}.assimilate_storage(&mut t)
+	}
+	.assimilate_storage(&mut t)
 	.unwrap();
 	t.into()
 }
-

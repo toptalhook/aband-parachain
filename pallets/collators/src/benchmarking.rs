@@ -26,7 +26,6 @@ fn get_bob<T: Config>() -> T::AccountId {
 	bob
 }
 
-
 benchmarks! {
 	close_pos {
 

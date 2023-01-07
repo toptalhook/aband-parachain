@@ -18,7 +18,6 @@
 //! It means that with this template, you can also use the Staking function in the case of PoA,
 //! which is very useful if you just only want to reward collators.
 
-
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(deprecated)]
 
@@ -30,14 +29,14 @@ mod mock;
 mod tests;
 mod weights;
 
-use weights::WeightInfo;
 use frame_support::{
 	pallet,
 	traits::{EnsureOrigin, OneSessionHandler},
 };
-use nimbus_primitives::{NimbusId};
+use nimbus_primitives::NimbusId;
 pub use pallet::*;
 use sp_std::prelude::Vec;
+use weights::WeightInfo;
 
 #[pallet]
 pub mod pallet {

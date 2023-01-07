@@ -1,12 +1,12 @@
 #![allow(unused_imports)]
 #![cfg(test)]
 use super::*;
-use crate::mock::{RuntimeCall, RuntimeOrigin, *};
-use frame_support::{assert_noop, assert_ok, debug, log::debug,};
 use crate::mock::RuntimeEvent::Collators;
+use crate::mock::{RuntimeCall, RuntimeOrigin, *};
+use frame_support::{assert_noop, assert_ok, debug, log::debug};
 
 fn close_pos_test() {
-	Pallet::<Test>::close_pos(RuntimeOrigin::root(), ).unwrap();
+	Pallet::<Test>::close_pos(RuntimeOrigin::root()).unwrap();
 }
 
 fn set_collators_test() {
@@ -28,7 +28,7 @@ fn close_pos_should_work() {
 fn open_pos_should_work() {
 	new_test_ext().execute_with(|| {
 		close_pos_test();
-		Pallet::<Test>::open_pos(RuntimeOrigin::root(),);
+		Pallet::<Test>::open_pos(RuntimeOrigin::root());
 		assert!(IsClosedPoS::<Test>::get() == false);
 	});
 }
@@ -37,7 +37,6 @@ fn open_pos_should_work() {
 fn set_collators_should() {
 	new_test_ext().execute_with(|| {
 		set_collators_test();
-
 	});
 }
 
@@ -59,5 +58,3 @@ fn remove_collators() {
 		assert!(Pallet::<Test>::get_collators().len() == 2);
 	});
 }
-
-

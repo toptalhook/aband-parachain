@@ -39,6 +39,9 @@ pub enum Subcommand {
 	/// The pallet benchmarking moved to the `pallet` sub-command.
 	#[command(subcommand)]
 	Benchmark(frame_benchmarking_cli::BenchmarkCmd),
+
+	/// Try some testing command against a specified runtime state.
+	TryRuntime(try_runtime_cli::TryRuntimeCmd),
 }
 
 #[derive(Debug, clap::Parser)]

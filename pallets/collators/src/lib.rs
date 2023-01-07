@@ -159,7 +159,7 @@ pub mod pallet {
 
 		///Set collators set.
 		///
-		/// only PoA can be used.
+		/// Only under PoA will only be used.
 		#[pallet::weight(<T as pallet::Config>::WeightInfo::set_collators())]
 		pub fn set_collators(
 			origin: OriginFor<T>,
@@ -174,7 +174,7 @@ pub mod pallet {
 
 		/// Add collator.
 		///
-		/// only PoA can be used.
+		/// Only under PoA will only be used.
 		#[pallet::weight(<T as pallet::Config>::WeightInfo::add_collator())]
 		pub fn add_collator(
 			origin: OriginFor<T>,
@@ -189,7 +189,7 @@ pub mod pallet {
 
 		/// Remove collator.
 		///
-		/// only PoA can be used.
+		/// Only under PoA will only be used.
 		#[pallet::weight(<T as pallet::Config>::WeightInfo::remove_collator())]
 		pub fn remove_collator(
 			origin: OriginFor<T>,

@@ -1,0 +1,47 @@
+{
+	"relaychain": {
+		"bin": "polkadot",
+		"chain": "rococo-local",
+		"nodes": [
+			{
+				"name": "alice",
+				"wsPort": 9966,
+				"port": 30666
+			},
+			{
+				"name": "bob",
+				"wsPort": 9955,
+				"port": 30555
+			}
+		]
+	},
+	"parachains": [
+		{
+			"bin": "aband",
+			"id": "2022",
+			"balance": "1000000000000000000000",
+			"nodes": [
+				{
+					"wsPort": 9944,
+					"name": "alice",
+					"port": 30333,
+					"flags": [
+						"--",
+						"--execution=wasm"
+					]
+				},
+				{
+					"wsPort": 9999,
+					"name": "bob",
+					"port": 31300,
+					"flags": [
+						"--",
+						"--execution=wasm"
+					]
+				}
+			]
+		}
+	],
+	"types": {
+	}
+}

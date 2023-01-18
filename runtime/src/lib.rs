@@ -114,7 +114,7 @@ construct_runtime!(
 		// consensus
 		AuthorInherent: pallet_author_inherent::{Pallet, Call, Storage, Inherent} = 30,
 		AuthorFilter: pallet_author_slot_filter::{Pallet, Storage, Event, Config} = 31,
-		Collators: pallet_collators::{Pallet, Storage, Config<T>, Event<T>} = 32,
+		Collators: pallet_collators::{Pallet, Call, Storage, Config<T>, Event<T>} = 32,
 		AuthorityDiscovery: pallet_authority_discovery = 33,
 		Authorship: pallet_authorship = 34,
 

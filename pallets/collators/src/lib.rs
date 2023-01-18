@@ -29,14 +29,26 @@ mod mock;
 mod tests;
 mod weights;
 
+use codec::{Decode, Encode, MaxEncodedLen};
 use frame_support::{
 	pallet,
 	traits::{EnsureOrigin, OneSessionHandler},
+	RuntimeDebug,
 };
 use nimbus_primitives::NimbusId;
 pub use pallet::*;
+use scale_info::TypeInfo;
+use sp_runtime::traits::Convert;
 use sp_std::prelude::Vec;
 use weights::WeightInfo;
+
+#[derive(
+	PartialEq, Eq, Encode, Decode, RuntimeDebug, Clone, TypeInfo, Copy, MaxEncodedLen, Default,
+)]
+pub struct CollatorInfo<AccountId, NimbusId> {
+	validator: AccountId,
+	nimbus_id: NimbusId,
+}
 
 #[pallet]
 pub mod pallet {
@@ -58,7 +70,8 @@ pub mod pallet {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		///
 		type AuthorityOrigin: EnsureOrigin<Self::RuntimeOrigin>;
-		///
+		/// A stable ID for a validator.
+		type ValidatorIdOf: Convert<Self::AccountId, Option<Self::AccountId>>;
 		type WeightInfo: WeightInfo;
 	}
 
@@ -95,9 +108,10 @@ pub mod pallet {
 	pub enum Event<T: Config> {
 		ClosePoS,
 		OpenPoS,
-		SetCollators { collators: Vec<T::AccountId> },
-		AddCollator { new_collator: T::AccountId },
+		SetCollators { collators: Vec<CollatorInfo<T::AccountId, NimbusId>> },
+		AddCollator { new_collator: CollatorInfo<T::AccountId, NimbusId> },
 		RemoveCollator { old_collator: T::AccountId },
+		SetNimbusId { collator: CollatorInfo<T::AccountId, NimbusId> },
 	}
 
 	// Errors inform users that something went wrong.
@@ -108,6 +122,11 @@ pub mod pallet {
 		/// Errors should have helpful documentation associated with them.
 		StorageOverflow,
 		ShouldUnderPoA,
+		CollatorsIsEmpty,
+		NimbusIdInUse,
+		ValidatorAlreadyExists,
+		NoAssociatedValidatorId,
+		CollatorsTowLow,
 	}
 
 	#[pallet::genesis_config]
@@ -163,11 +182,17 @@ pub mod pallet {
 		#[pallet::weight(<T as pallet::Config>::WeightInfo::set_collators())]
 		pub fn set_collators(
 			origin: OriginFor<T>,
-			collators: Vec<T::AccountId>,
+			collators: Vec<CollatorInfo<T::AccountId, NimbusId>>,
 		) -> DispatchResultWithPostInfo {
 			T::AuthorityOrigin::ensure_origin(origin)?;
 			ensure!(Self::is_closed_pos(), Error::<T>::ShouldUnderPoA);
-			Collators::<T>::put(&collators);
+			ensure!(collators.len() > 0, Error::<T>::CollatorsIsEmpty);
+			Collators::<T>::kill();
+			Mapping::<T>::remove_all(None);
+			collators.iter().for_each(|c| {
+				Collators::<T>::append(&c.validator);
+				Mapping::<T>::insert(&c.nimbus_id, &c.validator);
+			});
 			Self::deposit_event(Event::SetCollators { collators });
 			Ok(().into())
 		}
@@ -178,11 +203,23 @@ pub mod pallet {
 		#[pallet::weight(<T as pallet::Config>::WeightInfo::add_collator())]
 		pub fn add_collator(
 			origin: OriginFor<T>,
-			new_collator: T::AccountId,
+			new_collator: CollatorInfo<T::AccountId, NimbusId>,
 		) -> DispatchResultWithPostInfo {
 			T::AuthorityOrigin::ensure_origin(origin)?;
 			ensure!(Self::is_closed_pos(), Error::<T>::ShouldUnderPoA);
-			Collators::<T>::append(&new_collator);
+			ensure!(
+				!Mapping::<T>::contains_key(&new_collator.nimbus_id),
+				Error::<T>::NimbusIdInUse
+			);
+			Collators::<T>::try_mutate(|c| -> DispatchResultWithPostInfo {
+				if c.iter().position(|p| &new_collator.validator == p).is_none() {
+					c.push(new_collator.validator.clone());
+					Mapping::<T>::insert(&new_collator.nimbus_id, &new_collator.validator);
+					return Ok(().into())
+				}
+				return Err(Error::<T>::ValidatorAlreadyExists)?
+			})?;
+
 			Self::deposit_event(Event::AddCollator { new_collator });
 			Ok(().into())
 		}
@@ -197,10 +234,36 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo {
 			T::AuthorityOrigin::ensure_origin(origin)?;
 			ensure!(Self::is_closed_pos(), Error::<T>::ShouldUnderPoA);
-			Collators::<T>::mutate(|v| {
+
+			Collators::<T>::mutate(|v| -> DispatchResultWithPostInfo {
+				ensure!(v.len() > 1, Error::<T>::CollatorsTowLow);
 				v.retain(|h| h != &old_collator);
-			});
+				Ok(().into())
+			})?;
 			Self::deposit_event(Event::RemoveCollator { old_collator });
+			Ok(().into())
+		}
+
+		/// collator set nimbus id.
+		///
+		/// Only under PoA will only be used.
+		#[pallet::weight(<T as pallet::Config>::WeightInfo::set_nimbus_id())]
+		pub fn set_nimbus_id(
+			origin: OriginFor<T>,
+			nimbus_id: NimbusId,
+		) -> DispatchResultWithPostInfo {
+			let controller = ensure_signed(origin)?;
+			let validator =
+				T::ValidatorIdOf::convert(controller.clone()).unwrap_or_else(|| controller);
+			ensure!(Self::is_closed_pos(), Error::<T>::ShouldUnderPoA);
+			ensure!(!Mapping::<T>::contains_key(&nimbus_id), Error::<T>::NimbusIdInUse);
+			let collators = Collators::<T>::get();
+			if collators.iter().position(|p| &validator == p).is_some() {
+				Mapping::<T>::insert(&nimbus_id, &validator);
+			}
+			Self::deposit_event(Event::SetNimbusId {
+				collator: CollatorInfo { validator, nimbus_id },
+			});
 			Ok(().into())
 		}
 	}
@@ -247,7 +310,7 @@ impl<T: Config> OneSessionHandler<T::AccountId> for Pallet<T> {
 				Mapping::<T>::remove_all(None);
 				authorities.iter().for_each(|(x, y)| {
 					Collators::<T>::append(x);
-					Mapping::<T>::insert(y, x)
+					Mapping::<T>::insert(y, x);
 				});
 			} else {
 				// update session-key

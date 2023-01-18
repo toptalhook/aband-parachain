@@ -6,17 +6,17 @@ pushd .
 # The following line ensure we run from the project root
 #
 PROJECT_ROOT=`git rev-parse --show-toplevel`
-cd $PROJECT_ROOT
+cd $PROJECT_ROOT && cd ..
 
 # Find the current version from Cargo.toml
-VERSION=`grep "^version" ./cli/Cargo.toml | egrep -o "([0-9\.]+-?[0-9]+)"`
-GITUSER=parity
-GITREPO=polkadot
+VERSION=`grep "^version" ./substrate-parachain-PoS-template/runtime/Cargo.toml | egrep -o "([0-9\.]+-?[0-9]+)"`
+GITUSER=druaken
+GITREPO=testnet
 
 # Build the image
 echo "Building ${GITUSER}/${GITREPO}:latest docker image, hang on!"
 time docker build \
-    -f ./scripts/ci/dockerfiles/polkadot/polkadot_builder.Dockerfile \
+    -f ./substrate-parachain-PoS-template/scripts/polkadot.Dockerfile \
     -t ${GITUSER}/${GITREPO}:latest \
     -t ${GITUSER}/${GITREPO}:v${VERSION} \
     .

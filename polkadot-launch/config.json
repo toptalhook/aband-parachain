@@ -10,8 +10,8 @@
 			},
 			{
 				"name": "bob",
-				"wsPort": 9955,
-				"port": 30555
+				"wsPort": 9977,
+				"port": 30777
 			}
 		]
 	},
@@ -31,9 +31,9 @@
 					]
 				},
 				{
-					"wsPort": 9999,
+					"wsPort": 9955,
 					"name": "bob",
-					"port": 31300,
+					"port": 30555,
 					"flags": [
 						"--",
 						"--execution=wasm"

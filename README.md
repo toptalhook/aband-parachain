@@ -7,6 +7,9 @@ A PoS parachain template based on the nimbus consensus, you can quickly develop 
 and fully use the native Staking module of the substrate, you only need to focus on your business-level code.
 If you develop PoS parachains, it will save you a lot of time.
 
+## Document
+[document](./docs/manual-test.md)
+
 ## License
 The project is made available under the [Apache2.0](./LICENSE) license.
 ## More

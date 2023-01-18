@@ -4,12 +4,10 @@ use crate as collators;
 use frame_support::traits::{ConstU16, ConstU32, ConstU64, GenesisBuild};
 use frame_system::{self, EnsureRoot};
 use nimbus_primitives::NimbusPair;
-use nimbus_primitives::{NimbusId, NimbusPair};
 use sp_core::{Pair, H256, U256};
 use sp_runtime::{
 	testing::Header,
-	traits::{BlakeTwo256, IdentityLookup},
-	BuildStorage,
+	traits::{BlakeTwo256, Convert, IdentityLookup},
 };
 use sp_std::{prelude::Vec, result::Result};
 
@@ -55,9 +53,19 @@ impl frame_system::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 }
 
+pub struct ValidatorIdOf;
+
+impl Convert<u64, Option<u64>> for ValidatorIdOf {
+	fn convert(a: u64) -> Option<u64> {
+		Some(a)
+	}
+}
+
 impl collators::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 	type AuthorityOrigin = EnsureRoot<u64>;
+	type ValidatorIdOf = ValidatorIdOf;
+	type WeightInfo = ();
 }
 
 pub fn new_test_ext() -> sp_io::TestExternalities {

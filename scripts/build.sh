@@ -16,7 +16,7 @@ GITREPO=testnet
 # Build the image
 echo "Building ${GITUSER}/${GITREPO}:latest docker image, hang on!"
 time docker build \
-    -f ./substrate-parachain-PoS-template/scripts/polkadot.Dockerfile \
+    -f ./substrate-parachain-PoS-template/scripts/node_builder.Dockerfile \
     -t ${GITUSER}/${GITREPO}:latest \
     -t ${GITUSER}/${GITREPO}:v${VERSION} \
     .

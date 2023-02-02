@@ -23,7 +23,7 @@
 	```commandline
 	cd substrate-parachain-PoS-template
  	cargo build --release
-	cd scripts
+	cd polkadot-launch
 	polkadot-launch config.json
 	```
 

@@ -13,6 +13,78 @@ dependencies = [
 ]
 
 [[package]]
+name = "aband-node"
+version = "0.9.0"
+dependencies = [
+ "aband-runtime",
+ "clap",
+ "cumulus-client-cli",
+ "cumulus-client-collator",
+ "cumulus-client-consensus-common",
+ "cumulus-client-network",
+ "cumulus-client-service",
+ "cumulus-primitives-core",
+ "cumulus-primitives-parachain-inherent",
+ "cumulus-relay-chain-inprocess-interface",
+ "cumulus-relay-chain-interface",
+ "cumulus-relay-chain-minimal-node",
+ "cumulus-relay-chain-rpc-interface",
+ "derive_more",
+ "flume",
+ "frame-benchmarking",
+ "frame-benchmarking-cli",
+ "hex-literal",
+ "jsonrpsee",
+ "log",
+ "nimbus-consensus",
+ "nimbus-primitives",
+ "pallet-author-slot-filter",
+ "pallet-transaction-payment-rpc",
+ "parity-scale-codec",
+ "polkadot-cli",
+ "polkadot-parachain",
+ "polkadot-primitives",
+ "polkadot-service",
+ "polkadot-test-service",
+ "rand 0.8.5",
+ "sc-basic-authorship",
+ "sc-chain-spec",
+ "sc-cli",
+ "sc-client-api",
+ "sc-client-db",
+ "sc-consensus",
+ "sc-consensus-manual-seal",
+ "sc-executor",
+ "sc-keystore",
+ "sc-network",
+ "sc-network-common",
+ "sc-rpc",
+ "sc-rpc-api",
+ "sc-service",
+ "sc-telemetry",
+ "sc-tracing",
+ "sc-transaction-pool",
+ "sc-transaction-pool-api",
+ "serde",
+ "sp-api",
+ "sp-block-builder",
+ "sp-blockchain",
+ "sp-core",
+ "sp-inherents",
+ "sp-keystore",
+ "sp-offchain",
+ "sp-runtime",
+ "sp-session",
+ "sp-timestamp",
+ "sp-transaction-pool",
+ "substrate-build-script-utils",
+ "substrate-frame-rpc-system",
+ "substrate-prometheus-endpoint",
+ "try-runtime-cli",
+ "xcm",
+]
+
+[[package]]
 name = "aband-runtime"
 version = "0.1.0"
 dependencies = [
@@ -275,6 +347,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f52f63c5c1316a16a4b35eaac8b76a98248961a533f061684cb2a7cb0eafb6c6"
 
 [[package]]
+name = "array-bytes"
+version = "6.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "22f72e9d6fac4bc80778ea470b20197b88d28c292bb7d60c3fb099280003cd19"
+
+[[package]]
 name = "arrayref"
 version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -513,10 +591,10 @@ name = "beefy-gadget"
 version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "array-bytes",
+ "array-bytes 4.2.0",
  "async-trait",
  "fnv",
- "futures",
+ "futures 0.3.26",
  "log",
  "parity-scale-codec",
  "parking_lot 0.12.1",
@@ -548,7 +626,7 @@ version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "beefy-gadget",
- "futures",
+ "futures 0.3.26",
  "jsonrpsee",
  "log",
  "parity-scale-codec",
@@ -1378,9 +1456,144 @@ dependencies = [
 ]
 
 [[package]]
+name = "cumulus-client-cli"
+version = "0.1.0"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+dependencies = [
+ "clap",
+ "parity-scale-codec",
+ "sc-chain-spec",
+ "sc-cli",
+ "sc-service",
+ "sp-core",
+ "sp-runtime",
+ "url",
+]
+
+[[package]]
+name = "cumulus-client-collator"
+version = "0.1.0"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+dependencies = [
+ "cumulus-client-consensus-common",
+ "cumulus-client-network",
+ "cumulus-primitives-core",
+ "futures 0.3.26",
+ "parity-scale-codec",
+ "parking_lot 0.12.1",
+ "polkadot-node-primitives",
+ "polkadot-node-subsystem",
+ "polkadot-overseer",
+ "polkadot-primitives",
+ "sc-client-api",
+ "sp-api",
+ "sp-consensus",
+ "sp-core",
+ "sp-runtime",
+ "tracing",
+]
+
+[[package]]
+name = "cumulus-client-consensus-common"
+version = "0.1.0"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+dependencies = [
+ "async-trait",
+ "cumulus-client-pov-recovery",
+ "cumulus-primitives-core",
+ "cumulus-relay-chain-interface",
+ "dyn-clone",
+ "futures 0.3.26",
+ "log",
+ "parity-scale-codec",
+ "polkadot-primitives",
+ "sc-client-api",
+ "sc-consensus",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-runtime",
+ "sp-trie",
+ "tracing",
+]
+
+[[package]]
+name = "cumulus-client-network"
+version = "0.1.0"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+dependencies = [
+ "async-trait",
+ "cumulus-relay-chain-interface",
+ "futures 0.3.26",
+ "futures-timer",
+ "parity-scale-codec",
+ "parking_lot 0.12.1",
+ "polkadot-node-primitives",
+ "polkadot-parachain",
+ "polkadot-primitives",
+ "sc-client-api",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-core",
+ "sp-runtime",
+ "sp-state-machine",
+ "tracing",
+]
+
+[[package]]
+name = "cumulus-client-pov-recovery"
+version = "0.1.0"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+dependencies = [
+ "cumulus-primitives-core",
+ "cumulus-relay-chain-interface",
+ "futures 0.3.26",
+ "futures-timer",
+ "parity-scale-codec",
+ "polkadot-node-primitives",
+ "polkadot-node-subsystem",
+ "polkadot-overseer",
+ "polkadot-primitives",
+ "rand 0.8.5",
+ "sc-client-api",
+ "sc-consensus",
+ "sp-consensus",
+ "sp-maybe-compressed-blob",
+ "sp-runtime",
+ "tracing",
+]
+
+[[package]]
+name = "cumulus-client-service"
+version = "0.1.0"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+dependencies = [
+ "cumulus-client-cli",
+ "cumulus-client-collator",
+ "cumulus-client-consensus-common",
+ "cumulus-client-pov-recovery",
+ "cumulus-primitives-core",
+ "cumulus-relay-chain-inprocess-interface",
+ "cumulus-relay-chain-interface",
+ "cumulus-relay-chain-minimal-node",
+ "futures 0.3.26",
+ "parking_lot 0.12.1",
+ "polkadot-primitives",
+ "sc-client-api",
+ "sc-consensus",
+ "sc-service",
+ "sc-sysinfo",
+ "sc-telemetry",
+ "sp-api",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-core",
+ "sp-runtime",
+]
+
+[[package]]
 name = "cumulus-pallet-aura-ext"
 version = "0.1.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -1396,7 +1609,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-dmp-queue"
 version = "0.1.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
@@ -1413,7 +1626,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-parachain-system"
 version = "0.1.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "bytes",
  "cumulus-pallet-parachain-system-proc-macro",
@@ -1441,7 +1654,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-parachain-system-proc-macro"
 version = "0.1.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -1452,7 +1665,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-session-benchmarking"
 version = "3.0.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -1466,7 +1679,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-xcm"
 version = "0.1.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
@@ -1482,7 +1695,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-xcmp-queue"
 version = "0.1.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "cumulus-primitives-core",
  "frame-benchmarking",
@@ -1501,7 +1714,7 @@ dependencies = [
 [[package]]
 name = "cumulus-primitives-core"
 version = "0.1.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "parity-scale-codec",
  "polkadot-core-primitives",
@@ -1516,7 +1729,7 @@ dependencies = [
 [[package]]
 name = "cumulus-primitives-parachain-inherent"
 version = "0.1.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "async-trait",
  "cumulus-primitives-core",
@@ -1539,10 +1752,10 @@ dependencies = [
 [[package]]
 name = "cumulus-primitives-timestamp"
 version = "0.1.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "cumulus-primitives-core",
- "futures",
+ "futures 0.3.26",
  "parity-scale-codec",
  "sp-inherents",
  "sp-std",
@@ -1552,7 +1765,7 @@ dependencies = [
 [[package]]
 name = "cumulus-primitives-utility"
 version = "0.1.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
@@ -1566,13 +1779,38 @@ dependencies = [
 ]
 
 [[package]]
-name = "cumulus-relay-chain-interface"
+name = "cumulus-relay-chain-inprocess-interface"
 version = "0.1.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "async-trait",
  "cumulus-primitives-core",
- "futures",
+ "cumulus-relay-chain-interface",
+ "futures 0.3.26",
+ "futures-timer",
+ "polkadot-cli",
+ "polkadot-client",
+ "polkadot-service",
+ "sc-cli",
+ "sc-client-api",
+ "sc-sysinfo",
+ "sc-telemetry",
+ "sc-tracing",
+ "sp-api",
+ "sp-consensus",
+ "sp-core",
+ "sp-runtime",
+ "sp-state-machine",
+]
+
+[[package]]
+name = "cumulus-relay-chain-interface"
+version = "0.1.0"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+dependencies = [
+ "async-trait",
+ "cumulus-primitives-core",
+ "futures 0.3.26",
  "jsonrpsee-core",
  "parity-scale-codec",
  "polkadot-overseer",
@@ -1586,9 +1824,78 @@ dependencies = [
 ]
 
 [[package]]
+name = "cumulus-relay-chain-minimal-node"
+version = "0.1.0"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+dependencies = [
+ "array-bytes 6.0.0",
+ "async-trait",
+ "cumulus-primitives-core",
+ "cumulus-relay-chain-interface",
+ "cumulus-relay-chain-rpc-interface",
+ "futures 0.3.26",
+ "lru",
+ "polkadot-core-primitives",
+ "polkadot-network-bridge",
+ "polkadot-node-network-protocol",
+ "polkadot-node-subsystem-util",
+ "polkadot-overseer",
+ "polkadot-primitives",
+ "polkadot-service",
+ "sc-authority-discovery",
+ "sc-client-api",
+ "sc-consensus",
+ "sc-keystore",
+ "sc-network",
+ "sc-network-common",
+ "sc-service",
+ "sc-telemetry",
+ "sc-tracing",
+ "sc-transaction-pool",
+ "sc-transaction-pool-api",
+ "sp-api",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-consensus-babe",
+ "sp-runtime",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "cumulus-relay-chain-rpc-interface"
+version = "0.1.0"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+dependencies = [
+ "async-trait",
+ "cumulus-primitives-core",
+ "cumulus-relay-chain-interface",
+ "futures 0.3.26",
+ "futures-timer",
+ "jsonrpsee",
+ "lru",
+ "parity-scale-codec",
+ "polkadot-service",
+ "sc-client-api",
+ "sc-rpc-api",
+ "serde",
+ "serde_json",
+ "sp-api",
+ "sp-authority-discovery",
+ "sp-consensus-babe",
+ "sp-core",
+ "sp-state-machine",
+ "sp-storage",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
 name = "cumulus-test-relay-sproof-builder"
 version = "0.1.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "cumulus-primitives-core",
  "parity-scale-codec",
@@ -1633,7 +1940,7 @@ dependencies = [
  "cfg-if",
  "fiat-crypto",
  "packed_simd_2",
- "platforms",
+ "platforms 3.0.2",
  "subtle",
  "zeroize",
 ]
@@ -2091,6 +2398,19 @@ dependencies = [
 
 [[package]]
 name = "env_logger"
+version = "0.9.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a12e6657c4c97ebab115a42dcee77225f7f482cdd841cf7088c657a42e9e00e7"
+dependencies = [
+ "atty",
+ "humantime",
+ "log",
+ "regex",
+ "termcolor",
+]
+
+[[package]]
+name = "env_logger"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "85cdab6a89accf66733ad5a1693a4dcced6aeff64602b634530dd73c1f3ee9f0"
@@ -2141,7 +2461,7 @@ version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e43f2f1833d64e33f15592464d6fdd70f349dda7b1a53088eb83cd94014008c5"
 dependencies = [
- "futures",
+ "futures 0.3.26",
 ]
 
 [[package]]
@@ -2246,7 +2566,7 @@ version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "84f2e425d9790201ba4af4630191feac6dcc98765b118d4d18e91d23c2353866"
 dependencies = [
- "env_logger",
+ "env_logger 0.10.0",
  "log",
 ]
 
@@ -2269,7 +2589,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e24e6c429951433ccb7c87fd528c60084834dcd14763182c1f83291bcde24c34"
 dependencies = [
  "either",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "log",
  "num-traits",
@@ -2314,6 +2634,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "98de4bbd547a563b716d8dfa9aad1cb19bfab00f4fa09a6a4ed21dbcf44ce9c4"
 dependencies = [
  "num-traits",
+]
+
+[[package]]
+name = "flume"
+version = "0.10.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1657b4441c3403d9f7b3409e47575237dac27b1b5726df654a6ecbf92f0f7577"
+dependencies = [
+ "futures-core",
+ "futures-sink",
+ "nanorand",
+ "pin-project",
+ "spin 0.9.4",
 ]
 
 [[package]]
@@ -2374,7 +2707,7 @@ version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "Inflector",
- "array-bytes",
+ "array-bytes 4.2.0",
  "chrono",
  "clap",
  "comfy-table",
@@ -2470,6 +2803,22 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "serde",
+]
+
+[[package]]
+name = "frame-remote-externalities"
+version = "0.10.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "futures 0.3.26",
+ "log",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "substrate-rpc-client",
+ "tokio",
 ]
 
 [[package]]
@@ -2624,6 +2973,12 @@ checksum = "e6d5a32815ae3f33302d95fdcb2ce17862f8c65363dcfd29360480ba1001fc9c"
 
 [[package]]
 name = "futures"
+version = "0.1.31"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3a471a38ef8ed83cd6e40aa59c1ffe17db6855c18e3604d9c4ed8c08ebc28678"
+
+[[package]]
+name = "futures"
 version = "0.3.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13e2792b0ff0340399d58445b88fd9770e3489eff258a4cbc1523418f12abf84"
@@ -2732,6 +3087,7 @@ version = "0.3.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c1d6de3acfef38d2be4b1f543f553131788603495be83da675e180c8d6b7bd1"
 dependencies = [
+ "futures 0.1.31",
  "futures-channel",
  "futures-core",
  "futures-io",
@@ -2800,8 +3156,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c05aeb6a22b8f62540c194aac980f2115af067bfe15a0734d7277a768d396b31"
 dependencies = [
  "cfg-if",
+ "js-sys",
  "libc",
  "wasi 0.11.0+wasi-snapshot-preview1",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -3189,7 +3547,7 @@ dependencies = [
  "async-io",
  "core-foundation",
  "fnv",
- "futures",
+ "futures 0.3.26",
  "if-addrs",
  "ipnet",
  "log",
@@ -3377,7 +3735,29 @@ dependencies = [
  "jsonrpsee-proc-macros",
  "jsonrpsee-server",
  "jsonrpsee-types",
+ "jsonrpsee-ws-client",
  "tracing",
+]
+
+[[package]]
+name = "jsonrpsee-client-transport"
+version = "0.16.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "965de52763f2004bc91ac5bcec504192440f0b568a5d621c59d9dbd6f886c3fb"
+dependencies = [
+ "futures-util",
+ "http",
+ "jsonrpsee-core",
+ "jsonrpsee-types",
+ "pin-project",
+ "rustls-native-certs",
+ "soketto",
+ "thiserror",
+ "tokio",
+ "tokio-rustls",
+ "tokio-util",
+ "tracing",
+ "webpki-roots",
 ]
 
 [[package]]
@@ -3388,9 +3768,11 @@ checksum = "a4e70b4439a751a5de7dd5ed55eacff78ebf4ffe0fc009cb1ebb11417f5b536b"
 dependencies = [
  "anyhow",
  "arrayvec 0.7.2",
+ "async-lock",
  "async-trait",
  "beef",
  "futures-channel",
+ "futures-timer",
  "futures-util",
  "globset",
  "hyper",
@@ -3456,6 +3838,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "jsonrpsee-ws-client"
+version = "0.16.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b83daeecfc6517cfe210df24e570fb06213533dfb990318fae781f4c7119dd9"
+dependencies = [
+ "http",
+ "jsonrpsee-client-transport",
+ "jsonrpsee-core",
+ "jsonrpsee-types",
+]
+
+[[package]]
 name = "k256"
 version = "0.11.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3474,6 +3868,117 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3afef3b6eff9ce9d8ff9b3601125eec7f0c8cbac7abd14f355d053fa56c98768"
 dependencies = [
  "cpufeatures",
+]
+
+[[package]]
+name = "kusama-runtime"
+version = "0.9.37"
+source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
+dependencies = [
+ "bitvec",
+ "frame-benchmarking",
+ "frame-election-provider-support",
+ "frame-executive",
+ "frame-support",
+ "frame-system",
+ "frame-system-benchmarking",
+ "frame-system-rpc-runtime-api",
+ "frame-try-runtime",
+ "hex-literal",
+ "kusama-runtime-constants",
+ "log",
+ "pallet-authority-discovery",
+ "pallet-authorship",
+ "pallet-babe",
+ "pallet-bags-list",
+ "pallet-balances",
+ "pallet-bounties",
+ "pallet-child-bounties",
+ "pallet-collective",
+ "pallet-conviction-voting",
+ "pallet-democracy",
+ "pallet-election-provider-multi-phase",
+ "pallet-election-provider-support-benchmarking",
+ "pallet-elections-phragmen",
+ "pallet-fast-unstake",
+ "pallet-grandpa",
+ "pallet-identity",
+ "pallet-im-online",
+ "pallet-indices",
+ "pallet-membership",
+ "pallet-multisig",
+ "pallet-nis",
+ "pallet-nomination-pools",
+ "pallet-nomination-pools-benchmarking",
+ "pallet-nomination-pools-runtime-api",
+ "pallet-offences",
+ "pallet-offences-benchmarking",
+ "pallet-preimage",
+ "pallet-proxy",
+ "pallet-ranked-collective",
+ "pallet-recovery",
+ "pallet-referenda",
+ "pallet-scheduler",
+ "pallet-session",
+ "pallet-session-benchmarking",
+ "pallet-society",
+ "pallet-staking",
+ "pallet-timestamp",
+ "pallet-tips",
+ "pallet-transaction-payment",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-treasury",
+ "pallet-utility",
+ "pallet-vesting",
+ "pallet-whitelist",
+ "pallet-xcm",
+ "pallet-xcm-benchmarks",
+ "parity-scale-codec",
+ "polkadot-primitives",
+ "polkadot-runtime-common",
+ "polkadot-runtime-parachains",
+ "rustc-hex",
+ "scale-info",
+ "serde",
+ "serde_derive",
+ "smallvec",
+ "sp-api",
+ "sp-arithmetic",
+ "sp-authority-discovery",
+ "sp-beefy",
+ "sp-block-builder",
+ "sp-consensus-babe",
+ "sp-core",
+ "sp-inherents",
+ "sp-io",
+ "sp-mmr-primitives",
+ "sp-npos-elections",
+ "sp-offchain",
+ "sp-runtime",
+ "sp-session",
+ "sp-staking",
+ "sp-std",
+ "sp-transaction-pool",
+ "sp-version",
+ "static_assertions",
+ "substrate-wasm-builder",
+ "xcm",
+ "xcm-builder",
+ "xcm-executor",
+]
+
+[[package]]
+name = "kusama-runtime-constants"
+version = "0.9.37"
+source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
+dependencies = [
+ "frame-support",
+ "polkadot-primitives",
+ "polkadot-runtime-common",
+ "smallvec",
+ "sp-core",
+ "sp-runtime",
+ "sp-weights",
 ]
 
 [[package]]
@@ -3556,7 +4061,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2e0a0d2f693675f49ded13c5d510c48b78069e23cbd9108d7ccd59f6dc568819"
 dependencies = [
  "bytes",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "getrandom 0.2.8",
  "instant",
@@ -3594,7 +4099,7 @@ dependencies = [
  "ed25519-dalek",
  "either",
  "fnv",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "instant",
  "log",
@@ -3623,7 +4128,7 @@ version = "0.38.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8e42a271c1b49f789b92f7fc87749fa79ce5c7bdc88cbdfacb818a4bca47fec5"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "libp2p-core",
  "log",
  "parking_lot 0.12.1",
@@ -3638,7 +4143,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c052d0026f4817b44869bfb6810f4e1112f43aec8553f2cb38881c524b563abf"
 dependencies = [
  "asynchronous-codec",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "libp2p-core",
  "libp2p-swarm",
@@ -3663,7 +4168,7 @@ dependencies = [
  "bytes",
  "either",
  "fnv",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "instant",
  "libp2p-core",
@@ -3687,7 +4192,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04f378264aade9872d6ccd315c0accc18be3a35d15fc1b9c36e5b6f983b62b5b"
 dependencies = [
  "data-encoding",
- "futures",
+ "futures 0.3.26",
  "if-watch",
  "libp2p-core",
  "libp2p-swarm",
@@ -3722,7 +4227,7 @@ checksum = "03805b44107aa013e7cbbfa5627b31c36cbedfdfb00603c0311998882bc4bace"
 dependencies = [
  "asynchronous-codec",
  "bytes",
- "futures",
+ "futures 0.3.26",
  "libp2p-core",
  "log",
  "nohash-hasher",
@@ -3740,7 +4245,7 @@ checksum = "a978cb57efe82e892ec6f348a536bfbd9fee677adbe5689d7a93ad3a9bffbf2e"
 dependencies = [
  "bytes",
  "curve25519-dalek 3.2.0",
- "futures",
+ "futures 0.3.26",
  "libp2p-core",
  "log",
  "once_cell",
@@ -3761,7 +4266,7 @@ version = "0.41.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "929fcace45a112536e22b3dcfd4db538723ef9c3cb79f672b98be2cc8e25f37f"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "instant",
  "libp2p-core",
@@ -3778,7 +4283,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "01e7c867e95c8130667b24409d236d37598270e6da69b3baf54213ba31ffca59"
 dependencies = [
  "bytes",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "if-watch",
  "libp2p-core",
@@ -3800,7 +4305,7 @@ checksum = "3236168796727bfcf4927f766393415361e2c644b08bedb6a6b13d957c9a4884"
 dependencies = [
  "async-trait",
  "bytes",
- "futures",
+ "futures 0.3.26",
  "instant",
  "libp2p-core",
  "libp2p-swarm",
@@ -3818,7 +4323,7 @@ checksum = "b2a35472fe3276b3855c00f1c032ea8413615e030256429ad5349cdf67c6e1a0"
 dependencies = [
  "either",
  "fnv",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "instant",
  "libp2p-core",
@@ -3849,7 +4354,7 @@ version = "0.38.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4b257baf6df8f2df39678b86c578961d48cc8b68642a12f0f763f56c8e5858d"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "if-watch",
  "libc",
@@ -3865,7 +4370,7 @@ version = "0.1.0-alpha"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f7905ce0d040576634e8a3229a7587cc8beab83f79db6023800f1792895defa8"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "futures-rustls",
  "libp2p-core",
  "rcgen 0.10.0",
@@ -3883,7 +4388,7 @@ version = "0.38.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1bb1a35299860e0d4b3c02a3e74e3b293ad35ae0cee8a056363b0c862d082069"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "js-sys",
  "libp2p-core",
  "parity-send-wrapper",
@@ -3900,7 +4405,7 @@ dependencies = [
  "async-trait",
  "asynchronous-codec",
  "bytes",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "hex",
  "if-watch",
@@ -3929,7 +4434,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1d705506030d5c0aaf2882437c70dab437605f21c5f9811978f694e6917a3b54"
 dependencies = [
  "either",
- "futures",
+ "futures 0.3.26",
  "futures-rustls",
  "libp2p-core",
  "log",
@@ -3947,7 +4452,7 @@ version = "0.42.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4f63594a0aa818642d9d4915c791945053877253f08a3626f13416b5cd928a29"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "libp2p-core",
  "log",
  "parking_lot 0.12.1",
@@ -4256,7 +4761,7 @@ version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "69672161530e8aeca1d1400fbf3f1a1747ff60ea604265a4e906c2442df20532"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "rand 0.8.5",
  "thrift",
 ]
@@ -4293,7 +4798,7 @@ name = "mmr-gadget"
 version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "log",
  "parity-scale-codec",
  "sc-client-api",
@@ -4423,7 +4928,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c8552ab875c1313b97b8d20cb857b9fd63e2d1d6a0a1b53ce9821e575405f27a"
 dependencies = [
  "bytes",
- "futures",
+ "futures 0.3.26",
  "log",
  "pin-project",
  "smallvec",
@@ -4473,6 +4978,9 @@ name = "nanorand"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a51313c5820b0b02bd422f4b44776fbf47961755c74ce64afc73bfad10226c3"
+dependencies = [
+ "getrandom 0.2.8",
+]
 
 [[package]]
 name = "netlink-packet-core"
@@ -4519,7 +5027,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "65b4b14489ab424703c092062176d52ba55485a89c076b4f9db05092b7223aa6"
 dependencies = [
  "bytes",
- "futures",
+ "futures 0.3.26",
  "log",
  "netlink-packet-core",
  "netlink-sys",
@@ -4534,10 +5042,40 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "260e21fbb6f3d253a14df90eb0000a6066780a15dd901a7519ce02d77a94985b"
 dependencies = [
  "bytes",
- "futures",
+ "futures 0.3.26",
  "libc",
  "log",
  "tokio",
+]
+
+[[package]]
+name = "nimbus-consensus"
+version = "0.9.0"
+dependencies = [
+ "async-trait",
+ "cumulus-client-consensus-common",
+ "cumulus-primitives-core",
+ "cumulus-primitives-parachain-inherent",
+ "futures 0.3.26",
+ "log",
+ "nimbus-primitives",
+ "parity-scale-codec",
+ "parking_lot 0.12.1",
+ "polkadot-client",
+ "sc-client-api",
+ "sc-consensus",
+ "sc-consensus-manual-seal",
+ "sp-api",
+ "sp-application-crypto",
+ "sp-block-builder",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-core",
+ "sp-inherents",
+ "sp-keystore",
+ "sp-runtime",
+ "substrate-prometheus-endpoint",
+ "tracing",
 ]
 
 [[package]]
@@ -4742,7 +5280,7 @@ checksum = "17e7d5b6bb115db09390bed8842c94180893dd83df3dfce7354f2a2aa090a4ee"
 dependencies = [
  "async-trait",
  "dyn-clonable",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "orchestra-proc-macro",
  "pin-project",
@@ -4976,7 +5514,7 @@ name = "pallet-beefy-mmr"
 version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "array-bytes",
+ "array-bytes 4.2.0",
  "beefy-merkle-tree",
  "frame-support",
  "frame-system",
@@ -5060,6 +5598,23 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-conviction-voting"
+version = "4.0.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "assert_matches",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
  "sp-io",
  "sp-runtime",
  "sp-std",
@@ -5282,6 +5837,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-nis"
+version = "4.0.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-nomination-pools"
 version = "1.0.0"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
@@ -5294,6 +5865,26 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-runtime",
+ "sp-staking",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-nomination-pools-benchmarking"
+version = "1.0.0"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "frame-benchmarking",
+ "frame-election-provider-support",
+ "frame-support",
+ "frame-system",
+ "pallet-bags-list",
+ "pallet-nomination-pools",
+ "pallet-staking",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-runtime",
+ "sp-runtime-interface",
  "sp-staking",
  "sp-std",
 ]
@@ -5320,6 +5911,29 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "serde",
+ "sp-runtime",
+ "sp-staking",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-offences-benchmarking"
+version = "4.0.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "frame-benchmarking",
+ "frame-election-provider-support",
+ "frame-support",
+ "frame-system",
+ "pallet-babe",
+ "pallet-balances",
+ "pallet-grandpa",
+ "pallet-im-online",
+ "pallet-offences",
+ "pallet-session",
+ "pallet-staking",
+ "parity-scale-codec",
+ "scale-info",
  "sp-runtime",
  "sp-staking",
  "sp-std",
@@ -5367,6 +5981,58 @@ dependencies = [
  "parity-scale-codec",
  "safe-mix",
  "scale-info",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-ranked-collective"
+version = "4.0.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-recovery"
+version = "4.0.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-referenda"
+version = "4.0.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "assert_matches",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-arithmetic",
+ "sp-io",
  "sp-runtime",
  "sp-std",
 ]
@@ -5426,6 +6092,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-society"
+version = "4.0.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "rand_chacha 0.2.2",
+ "scale-info",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-staking"
 version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
@@ -5438,6 +6118,7 @@ dependencies = [
  "pallet-authorship",
  "pallet-session",
  "parity-scale-codec",
+ "rand_chacha 0.2.2",
  "scale-info",
  "serde",
  "sp-application-crypto",
@@ -5465,6 +6146,23 @@ source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0
 dependencies = [
  "log",
  "sp-arithmetic",
+]
+
+[[package]]
+name = "pallet-state-trie-migration"
+version = "4.0.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -5622,6 +6320,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-whitelist"
+version = "4.0.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-api",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-xcm"
 version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
@@ -5640,9 +6353,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-xcm-benchmarks"
+version = "0.9.37"
+source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-runtime",
+ "sp-std",
+ "xcm",
+ "xcm-executor",
+]
+
+[[package]]
 name = "parachain-info"
 version = "0.1.0"
-source = "git+https://github.com/PureStake/cumulus.git?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
+source = "git+https://github.com/PureStake/cumulus?branch=moonbeam-polkadot-v0.9.37#5f977c2a76ee969f3cbe4f531b64b75c2e92bf2b"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
@@ -5927,6 +6657,12 @@ checksum = "6ac9a59f73473f1b8d852421e59e64809f025994837ef743615c6d0c5b305160"
 
 [[package]]
 name = "platforms"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e8d0eef3571242013a0d5dc84861c3ae4a652e56e12adf8bdc26ff5f8cb34c94"
+
+[[package]]
+name = "platforms"
 version = "3.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3d7ddaed09e0eb771a79ab0fd64609ba0afb0a8366421957936ad14cbd13630"
@@ -5936,7 +6672,7 @@ name = "polkadot-approval-distribution"
 version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "polkadot-node-metrics",
  "polkadot-node-network-protocol",
  "polkadot-node-primitives",
@@ -5951,7 +6687,7 @@ name = "polkadot-availability-bitfield-distribution"
 version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "polkadot-node-network-protocol",
  "polkadot-node-subsystem",
  "polkadot-node-subsystem-util",
@@ -5967,7 +6703,7 @@ source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.
 dependencies = [
  "derive_more",
  "fatality",
- "futures",
+ "futures 0.3.26",
  "lru",
  "parity-scale-codec",
  "polkadot-erasure-coding",
@@ -5989,7 +6725,7 @@ version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
  "fatality",
- "futures",
+ "futures 0.3.26",
  "lru",
  "parity-scale-codec",
  "polkadot-erasure-coding",
@@ -6005,6 +6741,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "polkadot-cli"
+version = "0.9.37"
+source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
+dependencies = [
+ "clap",
+ "frame-benchmarking-cli",
+ "futures 0.3.26",
+ "log",
+ "polkadot-client",
+ "polkadot-node-core-pvf",
+ "polkadot-node-metrics",
+ "polkadot-performance-test",
+ "polkadot-service",
+ "sc-cli",
+ "sc-executor",
+ "sc-service",
+ "sc-sysinfo",
+ "sc-tracing",
+ "sp-core",
+ "sp-io",
+ "sp-keyring",
+ "substrate-build-script-utils",
+ "thiserror",
+ "try-runtime-cli",
+]
+
+[[package]]
 name = "polkadot-client"
 version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
@@ -6014,7 +6777,7 @@ dependencies = [
  "frame-benchmarking-cli",
  "frame-system",
  "frame-system-rpc-runtime-api",
- "futures",
+ "futures 0.3.26",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
  "polkadot-core-primitives",
@@ -6054,7 +6817,7 @@ dependencies = [
  "always-assert",
  "bitvec",
  "fatality",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "polkadot-node-network-protocol",
  "polkadot-node-primitives",
@@ -6087,7 +6850,7 @@ source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.
 dependencies = [
  "derive_more",
  "fatality",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "indexmap",
  "lru",
@@ -6124,7 +6887,7 @@ name = "polkadot-gossip-support"
 version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "polkadot-node-network-protocol",
  "polkadot-node-subsystem",
@@ -6148,7 +6911,7 @@ dependencies = [
  "async-trait",
  "bytes",
  "fatality",
- "futures",
+ "futures 0.3.26",
  "parity-scale-codec",
  "parking_lot 0.12.1",
  "polkadot-node-metrics",
@@ -6168,7 +6931,7 @@ name = "polkadot-node-collation-generation"
 version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "parity-scale-codec",
  "polkadot-erasure-coding",
  "polkadot-node-primitives",
@@ -6188,7 +6951,7 @@ source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.
 dependencies = [
  "bitvec",
  "derive_more",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "kvdb",
  "lru",
@@ -6216,7 +6979,7 @@ version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
  "bitvec",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "kvdb",
  "parity-scale-codec",
@@ -6237,7 +7000,7 @@ source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.
 dependencies = [
  "bitvec",
  "fatality",
- "futures",
+ "futures 0.3.26",
  "polkadot-erasure-coding",
  "polkadot-node-primitives",
  "polkadot-node-subsystem",
@@ -6254,7 +7017,7 @@ name = "polkadot-node-core-bitfield-signing"
 version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "polkadot-node-subsystem",
  "polkadot-node-subsystem-util",
  "polkadot-primitives",
@@ -6270,7 +7033,7 @@ version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
  "async-trait",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "parity-scale-codec",
  "polkadot-node-core-pvf",
@@ -6288,7 +7051,7 @@ name = "polkadot-node-core-chain-api"
 version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "polkadot-node-metrics",
  "polkadot-node-subsystem",
  "polkadot-primitives",
@@ -6303,7 +7066,7 @@ name = "polkadot-node-core-chain-selection"
 version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "kvdb",
  "parity-scale-codec",
@@ -6321,7 +7084,7 @@ version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
  "fatality",
- "futures",
+ "futures 0.3.26",
  "kvdb",
  "lru",
  "parity-scale-codec",
@@ -6340,7 +7103,7 @@ version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
  "async-trait",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "polkadot-node-subsystem",
  "polkadot-overseer",
@@ -6358,7 +7121,7 @@ source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.
 dependencies = [
  "bitvec",
  "fatality",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "polkadot-node-primitives",
  "polkadot-node-subsystem",
@@ -6377,7 +7140,7 @@ dependencies = [
  "always-assert",
  "assert_matches",
  "cpu-time",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "parity-scale-codec",
  "pin-project",
@@ -6406,7 +7169,7 @@ name = "polkadot-node-core-pvf-checker"
 version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "polkadot-node-primitives",
  "polkadot-node-subsystem",
  "polkadot-node-subsystem-util",
@@ -6422,7 +7185,7 @@ name = "polkadot-node-core-runtime-api"
 version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "lru",
  "polkadot-node-metrics",
  "polkadot-node-subsystem",
@@ -6456,7 +7219,7 @@ version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
  "bs58",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "log",
  "parity-scale-codec",
@@ -6477,7 +7240,7 @@ dependencies = [
  "async-trait",
  "derive_more",
  "fatality",
- "futures",
+ "futures 0.3.26",
  "hex",
  "parity-scale-codec",
  "polkadot-node-jaeger",
@@ -6498,7 +7261,7 @@ version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
  "bounded-vec",
- "futures",
+ "futures 0.3.26",
  "parity-scale-codec",
  "polkadot-parachain",
  "polkadot-primitives",
@@ -6531,7 +7294,7 @@ source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.
 dependencies = [
  "async-trait",
  "derive_more",
- "futures",
+ "futures 0.3.26",
  "orchestra",
  "polkadot-node-jaeger",
  "polkadot-node-network-protocol",
@@ -6555,7 +7318,7 @@ dependencies = [
  "async-trait",
  "derive_more",
  "fatality",
- "futures",
+ "futures 0.3.26",
  "futures-channel",
  "itertools",
  "kvdb",
@@ -6586,7 +7349,7 @@ version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
  "async-trait",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "lru",
  "orchestra",
@@ -6617,6 +7380,21 @@ dependencies = [
  "sp-core",
  "sp-runtime",
  "sp-std",
+]
+
+[[package]]
+name = "polkadot-performance-test"
+version = "0.9.37"
+source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
+dependencies = [
+ "env_logger 0.9.3",
+ "kusama-runtime",
+ "log",
+ "polkadot-erasure-coding",
+ "polkadot-node-core-pvf",
+ "polkadot-node-primitives",
+ "quote",
+ "thiserror",
 ]
 
 [[package]]
@@ -6683,12 +7461,15 @@ version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
  "bitvec",
+ "frame-benchmarking",
  "frame-election-provider-support",
  "frame-executive",
  "frame-support",
  "frame-system",
+ "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "frame-try-runtime",
+ "hex-literal",
  "log",
  "pallet-authority-discovery",
  "pallet-authorship",
@@ -6700,6 +7481,7 @@ dependencies = [
  "pallet-collective",
  "pallet-democracy",
  "pallet-election-provider-multi-phase",
+ "pallet-election-provider-support-benchmarking",
  "pallet-elections-phragmen",
  "pallet-fast-unstake",
  "pallet-grandpa",
@@ -6709,12 +7491,15 @@ dependencies = [
  "pallet-membership",
  "pallet-multisig",
  "pallet-nomination-pools",
+ "pallet-nomination-pools-benchmarking",
  "pallet-nomination-pools-runtime-api",
  "pallet-offences",
+ "pallet-offences-benchmarking",
  "pallet-preimage",
  "pallet-proxy",
  "pallet-scheduler",
  "pallet-session",
+ "pallet-session-benchmarking",
  "pallet-staking",
  "pallet-staking-reward-curve",
  "pallet-timestamp",
@@ -6765,6 +7550,7 @@ version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
  "bitvec",
+ "frame-benchmarking",
  "frame-election-provider-support",
  "frame-support",
  "frame-system",
@@ -6772,6 +7558,7 @@ dependencies = [
  "libsecp256k1",
  "log",
  "pallet-authorship",
+ "pallet-babe",
  "pallet-bags-list",
  "pallet-balances",
  "pallet-beefy-mmr",
@@ -6839,6 +7626,7 @@ dependencies = [
  "bitflags",
  "bitvec",
  "derive_more",
+ "frame-benchmarking",
  "frame-support",
  "frame-system",
  "log",
@@ -6859,6 +7647,7 @@ dependencies = [
  "scale-info",
  "serde",
  "sp-api",
+ "sp-application-crypto",
  "sp-core",
  "sp-inherents",
  "sp-io",
@@ -6867,6 +7656,7 @@ dependencies = [
  "sp-session",
  "sp-staking",
  "sp-std",
+ "static_assertions",
  "xcm",
  "xcm-executor",
 ]
@@ -6880,8 +7670,9 @@ dependencies = [
  "beefy-gadget",
  "frame-support",
  "frame-system-rpc-runtime-api",
- "futures",
+ "futures 0.3.26",
  "hex-literal",
+ "kusama-runtime",
  "kvdb",
  "kvdb-rocksdb",
  "lru",
@@ -6926,6 +7717,7 @@ dependencies = [
  "polkadot-runtime-constants",
  "polkadot-runtime-parachains",
  "polkadot-statement-distribution",
+ "rococo-runtime",
  "sc-authority-discovery",
  "sc-basic-authorship",
  "sc-block-builder",
@@ -6972,6 +7764,7 @@ dependencies = [
  "substrate-prometheus-endpoint",
  "thiserror",
  "tracing-gum",
+ "westend-runtime",
 ]
 
 [[package]]
@@ -6981,7 +7774,7 @@ source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.
 dependencies = [
  "arrayvec 0.5.2",
  "fatality",
- "futures",
+ "futures 0.3.26",
  "indexmap",
  "parity-scale-codec",
  "polkadot-node-network-protocol",
@@ -7003,6 +7796,121 @@ dependencies = [
  "parity-scale-codec",
  "polkadot-primitives",
  "sp-core",
+]
+
+[[package]]
+name = "polkadot-test-runtime"
+version = "0.9.37"
+source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
+dependencies = [
+ "bitvec",
+ "frame-election-provider-support",
+ "frame-executive",
+ "frame-support",
+ "frame-system",
+ "frame-system-rpc-runtime-api",
+ "log",
+ "pallet-authority-discovery",
+ "pallet-authorship",
+ "pallet-babe",
+ "pallet-balances",
+ "pallet-grandpa",
+ "pallet-indices",
+ "pallet-offences",
+ "pallet-session",
+ "pallet-staking",
+ "pallet-staking-reward-curve",
+ "pallet-sudo",
+ "pallet-timestamp",
+ "pallet-transaction-payment",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-vesting",
+ "pallet-xcm",
+ "parity-scale-codec",
+ "polkadot-parachain",
+ "polkadot-primitives",
+ "polkadot-runtime-common",
+ "polkadot-runtime-parachains",
+ "rustc-hex",
+ "scale-info",
+ "serde",
+ "serde_derive",
+ "smallvec",
+ "sp-api",
+ "sp-authority-discovery",
+ "sp-beefy",
+ "sp-block-builder",
+ "sp-consensus-babe",
+ "sp-core",
+ "sp-inherents",
+ "sp-io",
+ "sp-mmr-primitives",
+ "sp-offchain",
+ "sp-runtime",
+ "sp-session",
+ "sp-staking",
+ "sp-std",
+ "sp-transaction-pool",
+ "sp-version",
+ "substrate-wasm-builder",
+ "test-runtime-constants",
+ "xcm",
+ "xcm-builder",
+ "xcm-executor",
+]
+
+[[package]]
+name = "polkadot-test-service"
+version = "0.9.37"
+source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
+dependencies = [
+ "frame-benchmarking",
+ "frame-system",
+ "futures 0.3.26",
+ "hex",
+ "pallet-balances",
+ "pallet-staking",
+ "pallet-transaction-payment",
+ "polkadot-node-primitives",
+ "polkadot-node-subsystem",
+ "polkadot-overseer",
+ "polkadot-parachain",
+ "polkadot-primitives",
+ "polkadot-rpc",
+ "polkadot-runtime-common",
+ "polkadot-runtime-parachains",
+ "polkadot-service",
+ "polkadot-test-runtime",
+ "rand 0.8.5",
+ "sc-authority-discovery",
+ "sc-chain-spec",
+ "sc-cli",
+ "sc-client-api",
+ "sc-consensus",
+ "sc-consensus-babe",
+ "sc-executor",
+ "sc-finality-grandpa",
+ "sc-network",
+ "sc-network-common",
+ "sc-service",
+ "sc-tracing",
+ "sc-transaction-pool",
+ "sp-arithmetic",
+ "sp-authority-discovery",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-consensus-babe",
+ "sp-core",
+ "sp-finality-grandpa",
+ "sp-inherents",
+ "sp-keyring",
+ "sp-runtime",
+ "sp-state-machine",
+ "substrate-test-client",
+ "tempfile",
+ "test-runtime-constants",
+ "tokio",
+ "tracing-gum",
 ]
 
 [[package]]
@@ -7121,7 +8029,7 @@ dependencies = [
  "coarsetime",
  "crossbeam-queue",
  "derive_more",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "nanorand",
  "thiserror",
@@ -7608,7 +8516,7 @@ dependencies = [
  "cc",
  "libc",
  "once_cell",
- "spin",
+ "spin 0.5.2",
  "untrusted",
  "web-sys",
  "winapi",
@@ -7622,6 +8530,106 @@ checksum = "7e9562ea1d70c0cc63a34a22d977753b50cca91cc6b6527750463bd5dd8697bc"
 dependencies = [
  "libc",
  "librocksdb-sys",
+]
+
+[[package]]
+name = "rococo-runtime"
+version = "0.9.37"
+source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
+dependencies = [
+ "beefy-merkle-tree",
+ "frame-benchmarking",
+ "frame-executive",
+ "frame-support",
+ "frame-system",
+ "frame-system-benchmarking",
+ "frame-system-rpc-runtime-api",
+ "frame-try-runtime",
+ "hex-literal",
+ "log",
+ "pallet-authority-discovery",
+ "pallet-authorship",
+ "pallet-babe",
+ "pallet-balances",
+ "pallet-beefy",
+ "pallet-beefy-mmr",
+ "pallet-bounties",
+ "pallet-child-bounties",
+ "pallet-collective",
+ "pallet-democracy",
+ "pallet-elections-phragmen",
+ "pallet-grandpa",
+ "pallet-identity",
+ "pallet-im-online",
+ "pallet-indices",
+ "pallet-membership",
+ "pallet-mmr",
+ "pallet-multisig",
+ "pallet-nis",
+ "pallet-offences",
+ "pallet-preimage",
+ "pallet-proxy",
+ "pallet-recovery",
+ "pallet-scheduler",
+ "pallet-session",
+ "pallet-society",
+ "pallet-staking",
+ "pallet-state-trie-migration",
+ "pallet-sudo",
+ "pallet-timestamp",
+ "pallet-tips",
+ "pallet-transaction-payment",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-treasury",
+ "pallet-utility",
+ "pallet-vesting",
+ "pallet-xcm",
+ "pallet-xcm-benchmarks",
+ "parity-scale-codec",
+ "polkadot-parachain",
+ "polkadot-primitives",
+ "polkadot-runtime-common",
+ "polkadot-runtime-parachains",
+ "rococo-runtime-constants",
+ "scale-info",
+ "serde",
+ "serde_derive",
+ "smallvec",
+ "sp-api",
+ "sp-authority-discovery",
+ "sp-beefy",
+ "sp-block-builder",
+ "sp-consensus-babe",
+ "sp-core",
+ "sp-inherents",
+ "sp-io",
+ "sp-mmr-primitives",
+ "sp-offchain",
+ "sp-runtime",
+ "sp-session",
+ "sp-staking",
+ "sp-std",
+ "sp-transaction-pool",
+ "sp-version",
+ "static_assertions",
+ "substrate-wasm-builder",
+ "xcm",
+ "xcm-builder",
+ "xcm-executor",
+]
+
+[[package]]
+name = "rococo-runtime-constants"
+version = "0.9.37"
+source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
+dependencies = [
+ "frame-support",
+ "polkadot-primitives",
+ "polkadot-runtime-common",
+ "smallvec",
+ "sp-core",
+ "sp-runtime",
+ "sp-weights",
 ]
 
 [[package]]
@@ -7652,7 +8660,7 @@ version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "322c53fd76a18698f1c27381d58091de3a043d356aa5bd0d510608b565f469a0"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "log",
  "netlink-packet-route",
  "netlink-proto",
@@ -7816,7 +8824,7 @@ version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "26338f5e09bb721b85b135ea05af7767c90b52f6de4f087d4f4a3a9d64e7dc04"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "pin-project",
  "static_assertions",
 ]
@@ -7862,7 +8870,7 @@ version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "async-trait",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "ip_network",
  "libp2p",
@@ -7888,7 +8896,7 @@ name = "sc-basic-authorship"
 version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "log",
  "parity-scale-codec",
@@ -7953,11 +8961,11 @@ name = "sc-cli"
 version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "array-bytes",
+ "array-bytes 4.2.0",
  "chrono",
  "clap",
  "fdlimit",
- "futures",
+ "futures 0.3.26",
  "libp2p",
  "log",
  "names",
@@ -7994,7 +9002,7 @@ version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "fnv",
- "futures",
+ "futures 0.3.26",
  "log",
  "parity-scale-codec",
  "parking_lot 0.12.1",
@@ -8045,7 +9053,7 @@ version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "async-trait",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "libp2p",
  "log",
@@ -8065,13 +9073,42 @@ dependencies = [
 ]
 
 [[package]]
+name = "sc-consensus-aura"
+version = "0.10.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "async-trait",
+ "futures 0.3.26",
+ "log",
+ "parity-scale-codec",
+ "sc-block-builder",
+ "sc-client-api",
+ "sc-consensus",
+ "sc-consensus-slots",
+ "sc-telemetry",
+ "sp-api",
+ "sp-application-crypto",
+ "sp-block-builder",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-consensus-aura",
+ "sp-consensus-slots",
+ "sp-core",
+ "sp-inherents",
+ "sp-keystore",
+ "sp-runtime",
+ "substrate-prometheus-endpoint",
+ "thiserror",
+]
+
+[[package]]
 name = "sc-consensus-babe"
 version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "async-trait",
  "fork-tree",
- "futures",
+ "futures 0.3.26",
  "log",
  "merlin",
  "num-bigint",
@@ -8107,7 +9144,7 @@ name = "sc-consensus-babe-rpc"
 version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "jsonrpsee",
  "sc-consensus-babe",
  "sc-consensus-epochs",
@@ -8138,12 +9175,46 @@ dependencies = [
 ]
 
 [[package]]
+name = "sc-consensus-manual-seal"
+version = "0.10.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "assert_matches",
+ "async-trait",
+ "futures 0.3.26",
+ "jsonrpsee",
+ "log",
+ "parity-scale-codec",
+ "sc-client-api",
+ "sc-consensus",
+ "sc-consensus-aura",
+ "sc-consensus-babe",
+ "sc-consensus-epochs",
+ "sc-transaction-pool",
+ "sc-transaction-pool-api",
+ "serde",
+ "sp-api",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-consensus-aura",
+ "sp-consensus-babe",
+ "sp-consensus-slots",
+ "sp-core",
+ "sp-inherents",
+ "sp-keystore",
+ "sp-runtime",
+ "sp-timestamp",
+ "substrate-prometheus-endpoint",
+ "thiserror",
+]
+
+[[package]]
 name = "sc-consensus-slots"
 version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "async-trait",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "log",
  "parity-scale-codec",
@@ -8233,12 +9304,12 @@ version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "ahash",
- "array-bytes",
+ "array-bytes 4.2.0",
  "async-trait",
  "dyn-clone",
  "finality-grandpa",
  "fork-tree",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "log",
  "parity-scale-codec",
@@ -8273,7 +9344,7 @@ version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "finality-grandpa",
- "futures",
+ "futures 0.3.26",
  "jsonrpsee",
  "log",
  "parity-scale-codec",
@@ -8293,7 +9364,7 @@ version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "ansi_term",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "log",
  "sc-client-api",
@@ -8307,7 +9378,7 @@ name = "sc-keystore"
 version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "array-bytes",
+ "array-bytes 4.2.0",
  "async-trait",
  "parking_lot 0.12.1",
  "serde_json",
@@ -8322,14 +9393,14 @@ name = "sc-network"
 version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "array-bytes",
+ "array-bytes 4.2.0",
  "async-trait",
  "asynchronous-codec",
  "backtrace",
  "bytes",
  "either",
  "fnv",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "ip_network",
  "libp2p",
@@ -8365,7 +9436,7 @@ version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "cid",
- "futures",
+ "futures 0.3.26",
  "libp2p",
  "log",
  "prost",
@@ -8386,7 +9457,7 @@ dependencies = [
  "async-trait",
  "bitflags",
  "bytes",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "libp2p",
  "linked_hash_set",
@@ -8410,7 +9481,7 @@ version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "ahash",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "libp2p",
  "log",
@@ -8427,8 +9498,8 @@ name = "sc-network-light"
 version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "array-bytes",
- "futures",
+ "array-bytes 4.2.0",
+ "futures 0.3.26",
  "libp2p",
  "log",
  "parity-scale-codec",
@@ -8448,10 +9519,10 @@ name = "sc-network-sync"
 version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "array-bytes",
+ "array-bytes 4.2.0",
  "async-trait",
  "fork-tree",
- "futures",
+ "futures 0.3.26",
  "libp2p",
  "log",
  "lru",
@@ -8480,8 +9551,8 @@ name = "sc-network-transactions"
 version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "array-bytes",
- "futures",
+ "array-bytes 4.2.0",
+ "futures 0.3.26",
  "libp2p",
  "log",
  "parity-scale-codec",
@@ -8499,10 +9570,10 @@ name = "sc-offchain"
 version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "array-bytes",
+ "array-bytes 4.2.0",
  "bytes",
  "fnv",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "hyper",
  "hyper-rustls",
@@ -8529,7 +9600,7 @@ name = "sc-peerset"
 version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "libp2p",
  "log",
  "sc-utils",
@@ -8551,7 +9622,7 @@ name = "sc-rpc"
 version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "jsonrpsee",
  "log",
  "parity-scale-codec",
@@ -8614,8 +9685,8 @@ name = "sc-rpc-spec-v2"
 version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "array-bytes",
- "futures",
+ "array-bytes 4.2.0",
+ "futures 0.3.26",
  "futures-util",
  "hex",
  "jsonrpsee",
@@ -8643,7 +9714,7 @@ dependencies = [
  "async-trait",
  "directories",
  "exit-future",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "jsonrpsee",
  "log",
@@ -8735,7 +9806,7 @@ name = "sc-sysinfo"
 version = "6.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "libc",
  "log",
  "rand 0.8.5",
@@ -8755,7 +9826,7 @@ version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "chrono",
- "futures",
+ "futures 0.3.26",
  "libp2p",
  "log",
  "parking_lot 0.12.1",
@@ -8816,7 +9887,7 @@ version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "async-trait",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "linked-hash-map",
  "log",
@@ -8842,7 +9913,7 @@ version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "async-trait",
- "futures",
+ "futures 0.3.26",
  "log",
  "serde",
  "sp-blockchain",
@@ -8856,7 +9927,7 @@ version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "backtrace",
- "futures",
+ "futures 0.3.26",
  "futures-timer",
  "lazy_static",
  "log",
@@ -9278,7 +10349,7 @@ dependencies = [
  "base64 0.13.1",
  "bytes",
  "flate2",
- "futures",
+ "futures 0.3.26",
  "http",
  "httparse",
  "log",
@@ -9402,7 +10473,7 @@ name = "sp-blockchain"
 version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "log",
  "lru",
  "parity-scale-codec",
@@ -9421,7 +10492,7 @@ version = "0.10.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "async-trait",
- "futures",
+ "futures 0.3.26",
  "log",
  "parity-scale-codec",
  "sp-core",
@@ -9504,13 +10575,13 @@ name = "sp-core"
 version = "7.0.0"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
- "array-bytes",
+ "array-bytes 4.2.0",
  "base58",
  "bitflags",
  "blake2",
  "dyn-clonable",
  "ed25519-zebra",
- "futures",
+ "futures 0.3.26",
  "hash-db",
  "hash256-std-hasher",
  "impl-serde",
@@ -9636,7 +10707,7 @@ dependencies = [
  "bytes",
  "ed25519",
  "ed25519-dalek",
- "futures",
+ "futures 0.3.26",
  "libsecp256k1",
  "log",
  "parity-scale-codec",
@@ -9670,7 +10741,7 @@ version = "0.13.0"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "async-trait",
- "futures",
+ "futures 0.3.26",
  "merlin",
  "parity-scale-codec",
  "parking_lot 0.12.1",
@@ -10006,6 +11077,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6e63cff320ae2c57904679ba7cb63280a3dc4613885beafb148ee7bf9aa9042d"
 
 [[package]]
+name = "spin"
+version = "0.9.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f6002a767bff9e83f8eeecf883ecb8011875a21ae8da43bffb817a57e78cc09"
+dependencies = [
+ "lock_api",
+]
+
+[[package]]
 name = "spki"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -10169,12 +11249,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "substrate-build-script-utils"
+version = "3.0.0"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "platforms 2.0.0",
+]
+
+[[package]]
 name = "substrate-frame-rpc-system"
 version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
 dependencies = [
  "frame-system-rpc-runtime-api",
- "futures",
+ "futures 0.3.26",
  "jsonrpsee",
  "log",
  "parity-scale-codec",
@@ -10200,6 +11288,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "substrate-rpc-client"
+version = "0.10.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "async-trait",
+ "jsonrpsee",
+ "log",
+ "sc-rpc-api",
+ "serde",
+ "sp-runtime",
+]
+
+[[package]]
 name = "substrate-state-trie-migration-rpc"
 version = "4.0.0-dev"
 source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
@@ -10216,6 +11317,32 @@ dependencies = [
  "sp-state-machine",
  "sp-trie",
  "trie-db",
+]
+
+[[package]]
+name = "substrate-test-client"
+version = "2.0.1"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "array-bytes 4.2.0",
+ "async-trait",
+ "futures 0.3.26",
+ "parity-scale-codec",
+ "sc-client-api",
+ "sc-client-db",
+ "sc-consensus",
+ "sc-executor",
+ "sc-offchain",
+ "sc-service",
+ "serde",
+ "serde_json",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-core",
+ "sp-keyring",
+ "sp-keystore",
+ "sp-runtime",
+ "sp-state-machine",
 ]
 
 [[package]]
@@ -10334,6 +11461,20 @@ name = "termtree"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "95059e91184749cb66be6dc994f67f182b6d897cb3df74a5bf66b5e709295fd8"
+
+[[package]]
+name = "test-runtime-constants"
+version = "0.9.37"
+source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
+dependencies = [
+ "frame-support",
+ "polkadot-primitives",
+ "polkadot-runtime-common",
+ "smallvec",
+ "sp-core",
+ "sp-runtime",
+ "sp-weights",
+]
 
 [[package]]
 name = "thiserror"
@@ -10818,6 +11959,36 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3528ecfd12c466c6f163363caf2d02a71161dd5e1cc6ae7b34207ea2d42d81ed"
 
 [[package]]
+name = "try-runtime-cli"
+version = "0.10.0-dev"
+source = "git+https://github.com/PureStake/substrate?branch=moonbeam-polkadot-v0.9.37#946507ba9ef13e263534176b7b74e26fc56efbd4"
+dependencies = [
+ "clap",
+ "frame-remote-externalities",
+ "hex",
+ "log",
+ "parity-scale-codec",
+ "sc-cli",
+ "sc-executor",
+ "sc-service",
+ "serde",
+ "serde_json",
+ "sp-api",
+ "sp-core",
+ "sp-debug-derive",
+ "sp-externalities",
+ "sp-io",
+ "sp-keystore",
+ "sp-rpc",
+ "sp-runtime",
+ "sp-state-machine",
+ "sp-version",
+ "sp-weights",
+ "substrate-rpc-client",
+ "zstd",
+]
+
+[[package]]
 name = "tt-call"
 version = "1.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -10831,7 +12002,7 @@ checksum = "4712ee30d123ec7ae26d1e1b218395a16c87cdbaf4b3925d170d684af62ea5e8"
 dependencies = [
  "async-trait",
  "base64 0.13.1",
- "futures",
+ "futures 0.3.26",
  "log",
  "md-5",
  "rand 0.8.5",
@@ -11159,7 +12330,7 @@ version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "be0ecb0db480561e9a7642b5d3e4187c128914e58aa84330b9493e3eb68c5e7f"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "js-sys",
  "parking_lot 0.11.2",
  "pin-utils",
@@ -11641,6 +12812,110 @@ dependencies = [
 ]
 
 [[package]]
+name = "westend-runtime"
+version = "0.9.37"
+source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
+dependencies = [
+ "bitvec",
+ "frame-benchmarking",
+ "frame-election-provider-support",
+ "frame-executive",
+ "frame-support",
+ "frame-system",
+ "frame-system-benchmarking",
+ "frame-system-rpc-runtime-api",
+ "frame-try-runtime",
+ "hex-literal",
+ "log",
+ "pallet-authority-discovery",
+ "pallet-authorship",
+ "pallet-babe",
+ "pallet-bags-list",
+ "pallet-balances",
+ "pallet-collective",
+ "pallet-democracy",
+ "pallet-election-provider-multi-phase",
+ "pallet-election-provider-support-benchmarking",
+ "pallet-elections-phragmen",
+ "pallet-fast-unstake",
+ "pallet-grandpa",
+ "pallet-identity",
+ "pallet-im-online",
+ "pallet-indices",
+ "pallet-membership",
+ "pallet-multisig",
+ "pallet-nomination-pools",
+ "pallet-nomination-pools-benchmarking",
+ "pallet-nomination-pools-runtime-api",
+ "pallet-offences",
+ "pallet-offences-benchmarking",
+ "pallet-preimage",
+ "pallet-proxy",
+ "pallet-recovery",
+ "pallet-scheduler",
+ "pallet-session",
+ "pallet-session-benchmarking",
+ "pallet-society",
+ "pallet-staking",
+ "pallet-staking-reward-curve",
+ "pallet-sudo",
+ "pallet-timestamp",
+ "pallet-transaction-payment",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-treasury",
+ "pallet-utility",
+ "pallet-vesting",
+ "pallet-xcm",
+ "pallet-xcm-benchmarks",
+ "parity-scale-codec",
+ "polkadot-parachain",
+ "polkadot-primitives",
+ "polkadot-runtime-common",
+ "polkadot-runtime-parachains",
+ "rustc-hex",
+ "scale-info",
+ "serde",
+ "serde_derive",
+ "smallvec",
+ "sp-api",
+ "sp-authority-discovery",
+ "sp-beefy",
+ "sp-block-builder",
+ "sp-consensus-babe",
+ "sp-core",
+ "sp-inherents",
+ "sp-io",
+ "sp-mmr-primitives",
+ "sp-npos-elections",
+ "sp-offchain",
+ "sp-runtime",
+ "sp-session",
+ "sp-staking",
+ "sp-std",
+ "sp-transaction-pool",
+ "sp-version",
+ "substrate-wasm-builder",
+ "westend-runtime-constants",
+ "xcm",
+ "xcm-builder",
+ "xcm-executor",
+]
+
+[[package]]
+name = "westend-runtime-constants"
+version = "0.9.37"
+source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
+dependencies = [
+ "frame-support",
+ "polkadot-primitives",
+ "polkadot-runtime-common",
+ "smallvec",
+ "sp-core",
+ "sp-runtime",
+ "sp-weights",
+]
+
+[[package]]
 name = "which"
 version = "4.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -11971,6 +13246,7 @@ name = "xcm-executor"
 version = "0.9.37"
 source = "git+https://github.com/PureStake/polkadot?branch=moonbeam-polkadot-v0.9.37#b4b818d89bf62fa552e7eb0c3aa7aa015ffbb20c"
 dependencies = [
+ "frame-benchmarking",
  "frame-support",
  "impl-trait-for-tuples",
  "log",
@@ -12000,7 +13276,7 @@ version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e5d9ba232399af1783a58d8eb26f6b5006fbefe2dc9ef36bd283324792d03ea5"
 dependencies = [
- "futures",
+ "futures 0.3.26",
  "log",
  "nohash-hasher",
  "parking_lot 0.12.1",

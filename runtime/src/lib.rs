@@ -25,7 +25,7 @@ use frame_support::{
 	parameter_types,
 	traits::{ConstU16, ConstU32, EitherOfDiverse, Everything, OnInitialize, U128CurrencyToVote},
 	weights::{
-		constants::WEIGHT_PER_SECOND, ConstantMultiplier, Weight, WeightToFeeCoefficient,
+		constants::WEIGHT_REF_TIME_PER_SECOND, ConstantMultiplier, Weight, WeightToFeeCoefficient,
 		WeightToFeeCoefficients, WeightToFeePolynomial,
 	},
 	PalletId,

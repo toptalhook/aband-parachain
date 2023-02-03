@@ -28,7 +28,7 @@
 					"flags": [
                                                 "--unsafe-ws-external",
                                                 "--unsafe-rpc-external",
-                                                "-rpc-cors=all",
+                                                "--rpc-cors=all",
                                                 "--rpc-methods=Unsafe",
 						"--",
 						"--execution=wasm"
@@ -41,7 +41,7 @@
 					"flags": [
                                                 "--unsafe-ws-external",
                                                 "--unsafe-rpc-external",
-                                                "-rpc-cors=all",
+                                                "--rpc-cors=all",
                                                 "--rpc-methods=Unsafe",
 						"--",
 						"--execution=wasm"

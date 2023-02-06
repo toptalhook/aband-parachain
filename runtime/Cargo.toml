@@ -24,11 +24,19 @@ smallvec = "1.10.0"
 # Local
 pallet-template = { path = "../pallets/template", default-features = false }
 pallet-collators = { path = "../pallets/collators", default-features = false }
+pallet-group = { path = "../pallets/group", default-features = false }
 
 # nimbus
 nimbus-primitives = { path = "../consensus/nimbus-primitives", default-features = false}
 pallet-author-inherent = { path = "../consensus/pallets/author-inherent", default-features = false}
 pallet-author-slot-filter = { path = "../consensus/pallets/author-slot-filter", default-features = false}
+
+# orml
+orml-tokens = { git = "https://github.com/Aband-Network/open-runtime-module-library.git", default-features = false, branch = "aband-polkadot-v0.9.37" }
+orml-traits = { git = "https://github.com/Aband-Network/open-runtime-module-library.git", default-features = false, branch = "aband-polkadot-v0.9.37" }
+orml-currencies = { git = "https://github.com/Aband-Network/open-runtime-module-library.git", default-features = false, branch = "aband-polkadot-v0.9.37" }
+orml-utilities = { git = "https://github.com/Aband-Network/open-runtime-module-library.git", default-features = false, branch = "aband-polkadot-v0.9.37" }
+
 # Substrate
 frame-benchmarking = { git = "https://github.com/PureStake/substrate", default-features = false, optional = true, branch = "moonbeam-polkadot-v0.9.37" }
 frame-executive = { git = "https://github.com/PureStake/substrate", default-features = false, branch = "moonbeam-polkadot-v0.9.37" }
@@ -167,6 +175,12 @@ std = [
 	"pallet-utility/std",
 	"pallet-offences/std",
 	"pallet-im-online/std",
+	# orml
+	"orml-tokens/std",
+	"orml-traits/std",
+	"orml-currencies/std",
+	"orml-utilities/std",
+	"pallet-group/std",
 ]
 
 runtime-benchmarks = [

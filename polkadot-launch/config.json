@@ -26,8 +26,8 @@
 					"name": "alice",
 					"port": 30333,
 					"flags": [
-                                                "--unsafe-ws-external",
-                                                "--unsafe-rpc-external",
+                                                "--ws-external",
+                                                "--rpc-external",
                                                 "--rpc-cors=all",
                                                 "--rpc-methods=Unsafe",
 						"--",
@@ -39,8 +39,8 @@
 					"name": "bob",
 					"port": 30555,
 					"flags": [
-                                                "--unsafe-ws-external",
-                                                "--unsafe-rpc-external",
+                                                "--ws-external",
+                                                "--rpc-external",
                                                 "--rpc-cors=all",
                                                 "--rpc-methods=Unsafe",
 						"--",

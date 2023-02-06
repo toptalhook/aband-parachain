@@ -304,6 +304,7 @@ fn testnet_genesis(
 		// 		.collect::<Vec<(AccountId, NimbusId)>>()
 		// 		.to_vec(),
 		// },
+		tokens: Default::default(),
 		staking: StakingConfig {
 			validator_count: invulnerables.len() as u32,
 			minimum_validator_count: invulnerables.len() as u32,

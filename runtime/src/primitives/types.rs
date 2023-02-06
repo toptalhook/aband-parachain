@@ -12,6 +12,10 @@ pub type Balance = u128;
 /// Index of a transaction in the chain.
 pub type Index = u32;
 
+pub type CurrencyId = u64;
+
+pub type Amount = i128;
+
 /// A hash of some data used by the chain.
 pub type Hash = sp_core::H256;
 

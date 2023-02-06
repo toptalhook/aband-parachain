@@ -4,7 +4,9 @@ panic = "unwind"
 [workspace]
 members = [
 	"node",
-	"pallets/*",
+	"pallets/collators",
+	"pallets/group",
+	"pallets/template",
 	"runtime",
 ]
 
@@ -12,3 +14,13 @@ exclude = [
 	"consensus",
 	"pallets/template",
 ]
+
+[patch."https://github.com/paritytech/substrate"]
+frame-support = { git = "https://github.com/PureStake/substrate", branch = "moonbeam-polkadot-v0.9.37" }
+frame-system = { git = "https://github.com/PureStake/substrate", branch = "moonbeam-polkadot-v0.9.37" }
+sp-runtime = { git = "https://github.com/PureStake/substrate", branch = "moonbeam-polkadot-v0.9.37" }
+sp-std = { git = "https://github.com/PureStake/substrate", branch = "moonbeam-polkadot-v0.9.37" }
+sp-io = { git = "https://github.com/PureStake/substrate", branch = "moonbeam-polkadot-v0.9.37" }
+
+[patch."https://github.com/paritytech/polkadot"]
+xcm = { git = "https://github.com/PureStake/polkadot", branch = "moonbeam-polkadot-v0.9.37"}

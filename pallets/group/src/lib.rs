@@ -80,7 +80,6 @@ pub struct GroupInfo<AccountId, BlockNumber, Visibility, Liquidity, MultiAsset, 
 
 #[derive(Encode, Decode, Clone, Eq, PartialEq, MaxEncodedLen, RuntimeDebug, TypeInfo)]
 pub struct CandyInfo<MultiAsset, Balance, BlockNumber, AccountId> {
-	candy_id: u64,
 	group_id: u64,
 	owner: AccountId,
 	asset: MultiAsset,
@@ -240,7 +239,6 @@ pub mod pallet {
 			let owner = ensure_signed(origin)?;
 			let next_candy_id = NextCandyId::<T>::get();
 			Candies::<T>::insert(next_candy_id, CandyInfo {
-				candy_id: next_candy_id,
 				group_id,
 				owner,
 				asset: asset,

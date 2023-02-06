@@ -7,11 +7,13 @@ impl pallet_template::Config for Runtime {
 
 parameter_types! {
 	pub const GetNativeCurrencyId: CurrencyId = 0;
+	pub const CandyExpire: BlockNumber = DAYS;
 }
 
 impl pallet_group::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type MultiCurrency = Currencies;
+	type CandyExpire = CandyExpire;
 	type GroupIdConvertToAccountId = pallet_group::group_id::GroupId<u64>;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
 }

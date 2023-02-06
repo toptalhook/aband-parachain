@@ -19,8 +19,9 @@ use orml_traits::{
 	LockIdentifier, MultiCurrency, MultiCurrencyExtended, MultiLockableCurrency, MultiReservableCurrency,
 	NamedBasicReservableCurrency, NamedMultiReservableCurrency,
 };
-use sp_runtime::traits::AccountIdConversion;
+use sp_runtime::traits::{AccountIdConversion, BlockNumberProvider, CheckedAdd};
 use sp_core::{ConstU32, Get};
+use sp_std::vec;
 
 #[cfg(test)]
 mod mock;
@@ -33,8 +34,8 @@ mod tests;
 mod benchmarking;
 pub mod group_id;
 
-pub type AssetId = u32;
-pub type GroupId = u32;
+pub type AssetId = u64;
+pub type GroupId = u64;
 pub type CandyId = u64;
 pub type ServerId = u64;
 pub type MemberCount = u32;
@@ -70,7 +71,7 @@ pub struct GroupInfo<AccountId, BlockNumber, Visibility, Liquidity, MultiAsset, 
 	group_account_id: AccountId,
 	create_block_high: BlockNumber,
 	visibility: Visibility,
-	min_liquidity: Liquidity,
+	min_liquidity: Option<Liquidity>,
 	max_members_number: u32,
 	join_fee: Option<MultiAsset>,
 	status: GroupStatus,
@@ -81,9 +82,10 @@ pub struct GroupInfo<AccountId, BlockNumber, Visibility, Liquidity, MultiAsset, 
 pub struct CandyInfo<MultiAsset, Balance, BlockNumber, AccountId> {
 	candy_id: u64,
 	group_id: u64,
+	owner: AccountId,
 	asset: MultiAsset,
 	claimed_amount: Balance,
-	max_lucky_number: u16,
+	max_lucky_number: MemberCount,
 	claim_detail: Vec<(AccountId, Balance)>,
 	end_block: BlockNumber,
 }
@@ -110,7 +112,8 @@ pub mod pallet {
 			+ MultiLockableCurrency<Self::AccountId>
 			+ MultiReservableCurrency<Self::AccountId>
 			+ NamedMultiReservableCurrency<Self::AccountId>;
-		type GroupIdConvertToAccountId: From<CurrencyIdOf<Self>> + AccountIdConversion<Self::AccountId>;
+		type CandyExpire: Get<Self::BlockNumber>;
+		type GroupIdConvertToAccountId: From<GroupId> + AccountIdConversion<Self::AccountId>;
 		#[pallet::constant]
 		type GetNativeCurrencyId: Get<CurrencyIdOf<Self>>;
 
@@ -125,7 +128,7 @@ pub mod pallet {
 	#[pallet::getter(fn groups)]
 	// Learn more about declaring storage items:
 	// https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
-	pub type Groups<T: Config> = StorageMap<_, Twox64Concat, GroupId, GroupInfoOf<T>>;
+	pub type Groups<T: Config> = StorageMap<_, Twox64Concat, GroupId, GroupInfoOf<T>, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn next_group_id)]
@@ -168,6 +171,8 @@ pub mod pallet {
 		NoneValue,
 		/// Errors should have helpful documentation associated with them.
 		StorageOverflow,
+		GroupNotExists,
+		CandyNotExists,
 	}
 
 	#[pallet::hooks]
@@ -184,29 +189,44 @@ pub mod pallet {
 			let creator = ensure_signed(origin)?;
 			// todo group_account_id now()
 			let next_group_id = NextGroupId::<T>::get();
-			// Groups::<T>::insert(next_group_id, GroupInfo {
-			// 	owner: Some(creator),
-			// 	commission,
-			// 	group_account_id: (),
-			// 	create_block_high: (),
-			// 	visibility: (),
-			// 	min_liquidity: (),
-			// 	max_members_number,
-			// 	join_fee: (),
-			// 	status: GroupStatus::Active,
-			// 	members: vec![creator],
-			// });
-
+			let group_account_id = T::GroupIdConvertToAccountId::from(next_group_id).into_account_truncating();
+			Groups::<T>::insert(next_group_id, GroupInfo {
+				owner: Some(creator.clone()),
+				commission,
+				group_account_id,
+				create_block_high: Self::now(),
+				visibility,
+				min_liquidity,
+				max_members_number,
+				join_fee,
+				status: GroupStatus::Active,
+				members: vec![creator.clone()],
+			});
+			NextGroupId::<T>::put(next_group_id.checked_add(1u64).ok_or(Error::<T>::StorageOverflow)?);
 			Ok(().into())
 		}
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 		pub fn enter_group(origin: OriginFor<T>, group_id: GroupId, new_member: T::AccountId, liquidity: Option<Liquidity<MultiAssetOf<T>>>) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+			Groups::<T>::mutate_exists(group_id, |g| -> DispatchResultWithPostInfo{
+				let mut group = g.take().ok_or(Error::<T>::GroupNotExists)?;
+				group.members.push(new_member.clone());
+				*g = Some(group);
+				Ok(().into())
+			})?;
 			Ok(().into())
 		}
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 		pub fn leave_group(origin: OriginFor<T>, group_id: GroupId, old_member: T::AccountId) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+			Groups::<T>::mutate_exists(group_id, |g| -> DispatchResultWithPostInfo{
+				let mut group = g.take().ok_or(Error::<T>::GroupNotExists)?;
+				group.members.retain(|w| w != &old_member);
+				*g = Some(group);
+				Ok(().into())
+			})?;
 			Ok(().into())
 		}
 
@@ -217,12 +237,42 @@ pub mod pallet {
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 		pub fn give_candy(origin: OriginFor<T>, group_id: GroupId, asset: MultiAssetOf<T>, max_lucky_number: MemberCount) -> DispatchResultWithPostInfo {
+			let owner = ensure_signed(origin)?;
+			let next_candy_id = NextCandyId::<T>::get();
+			Candies::<T>::insert(next_candy_id, CandyInfo {
+				candy_id: next_candy_id,
+				group_id,
+				owner,
+				asset: asset,
+				claimed_amount: BalanceOf::<T>::from(0u8),
+				max_lucky_number: max_lucky_number,
+				claim_detail: vec![],
+				end_block: Self::now().checked_add(&T::CandyExpire::get()).ok_or(Error::<T>::StorageOverflow)?,
+			});
+			CandiesOfGroup::<T>::mutate(group_id, |h| h.push(next_candy_id));
+			NextCandyId::<T>::put(next_candy_id.checked_add(1u64).ok_or(Error::<T>::StorageOverflow)?);
+			//
 			Ok(().into())
 		}
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 		pub fn get_candy(origin: OriginFor<T>, group_id: GroupId, candy_id: CandyId, detail: Vec<(T::AccountId, BalanceOf<T>)>) -> DispatchResultWithPostInfo {
+			let who = ensure_signed(origin)?;
+			// detail.iter().for_each(|d| {
+			// 	Candies::<T>::mutate_exists(candy_id, |c| -> DispatchResultWithPostInfo {
+			// 		let mut candy = c.take().ok_or(Error::<T>::CandyNotExists)?;
+			// 		let asset_id = candy.asset.asset_id.clone();
+			// 		// T::MultiCurrency::repatriate_reserved_named()
+			// 		Ok(().into())
+			// 	})?;
+			// });
 			Ok(().into())
+		}
+	}
+
+	impl<T: Config> Pallet<T> {
+		pub fn now() -> T::BlockNumber {
+			frame_system::Pallet::<T>::current_block_number()
 		}
 	}
 }

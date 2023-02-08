@@ -30,12 +30,15 @@ pallet-group = { path = "../pallets/group", default-features = false }
 nimbus-primitives = { git = "https://github.com/PureStake/nimbus.git", default-features = false, branch = "moonbeam-polkadot-v0.9.37"}
 pallet-author-inherent = { git = "https://github.com/PureStake/nimbus.git", default-features = false, branch = "moonbeam-polkadot-v0.9.37"}
 pallet-author-slot-filter = { git = "https://github.com/PureStake/nimbus.git", default-features = false, branch = "moonbeam-polkadot-v0.9.37"}
+pallet-assets-manage = { git = "https://github.com/Aband-Network/assets.git", default-features = false, branch = "aband-polkadot-v0.9.37" }
 
-# orml
+
+# assets
 orml-tokens = { git = "https://github.com/Aband-Network/open-runtime-module-library.git", default-features = false, branch = "aband-polkadot-v0.9.37" }
 orml-traits = { git = "https://github.com/Aband-Network/open-runtime-module-library.git", default-features = false, branch = "aband-polkadot-v0.9.37" }
 orml-currencies = { git = "https://github.com/Aband-Network/open-runtime-module-library.git", default-features = false, branch = "aband-polkadot-v0.9.37" }
 orml-utilities = { git = "https://github.com/Aband-Network/open-runtime-module-library.git", default-features = false, branch = "aband-polkadot-v0.9.37" }
+
 
 # Substrate
 frame-benchmarking = { git = "https://github.com/PureStake/substrate", default-features = false, optional = true, branch = "moonbeam-polkadot-v0.9.37" }
@@ -181,6 +184,7 @@ std = [
 	"orml-currencies/std",
 	"orml-utilities/std",
 	"pallet-group/std",
+	"pallet-assets-manage/std",
 ]
 
 runtime-benchmarks = [

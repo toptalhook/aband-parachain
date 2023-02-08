@@ -6,6 +6,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
+mod assets;
 pub mod collective;
 mod consensus;
 mod local;
@@ -13,7 +14,6 @@ mod primitives;
 mod staking;
 pub mod voter_bags;
 pub mod xcm_config;
-mod orml;
 
 use collective::*;
 use cumulus_pallet_parachain_system::RelayNumberStrictlyIncreases;
@@ -133,7 +133,8 @@ construct_runtime!(
 		// local
 		TemplateModule: pallet_template = 60,
 		Group: pallet_group = 61,
-		// orml
+		// assets
+		AssetsManage: pallet_assets_manage = 70,
 		Tokens: orml_tokens = 71,
 		Currencies: orml_currencies = 72,
 

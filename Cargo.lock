@@ -112,6 +112,7 @@ dependencies = [
  "orml-tokens",
  "orml-traits",
  "orml-utilities",
+ "pallet-assets-manage",
  "pallet-aura",
  "pallet-author-inherent",
  "pallet-author-slot-filter",
@@ -5426,6 +5427,23 @@ checksum = "a1914cd452d8fccd6f9db48147b29fd4ae05bea9dc5d9ad578509f72415de282"
 dependencies = [
  "cfg-if",
  "libm 0.1.4",
+]
+
+[[package]]
+name = "pallet-assets-manage"
+version = "0.1.0"
+source = "git+https://github.com/Aband-Network/assets.git?branch=aband-polkadot-v0.9.37#e6e6f1bf73652b9b48222336f1578aa3bc813375"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "orml-traits",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]

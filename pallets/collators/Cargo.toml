@@ -21,7 +21,7 @@ frame-support = { git = "https://github.com/PureStake/substrate", default-featur
 frame-system = { git = "https://github.com/PureStake/substrate", default-features = false, branch = "moonbeam-polkadot-v0.9.37" }
 
 # nimbus
-nimbus-primitives = { path = "../../consensus/nimbus-primitives", default-features = false}
+nimbus-primitives = { git = "https://github.com/PureStake/nimbus.git", default-features = false, branch = "moonbeam-polkadot-v0.9.37"}
 
 [features]
 default = ["std"]

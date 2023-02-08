@@ -30,10 +30,11 @@ rand = "0.8"
 jsonrpsee = { version = "0.16.2", features = [ "macros", "server" ] }
 
 # Local Dependencies
-nimbus-consensus = { path = "../consensus/nimbus-consensus" }
-nimbus-primitives = { path = "../consensus/nimbus-primitives" }
+nimbus-consensus = { git = "https://github.com/PureStake/nimbus.git", branch = "moonbeam-polkadot-v0.9.37"}
+nimbus-primitives = { git = "https://github.com/PureStake/nimbus.git", branch = "moonbeam-polkadot-v0.9.37"}
+pallet-author-slot-filter = { git = "https://github.com/PureStake/nimbus.git", branch = "moonbeam-polkadot-v0.9.37"}
+
 parachain-template-runtime = { path = "../runtime", package = "aband-runtime" }
-pallet-author-slot-filter = { path = "../consensus/pallets/author-slot-filter" }
 
 # Substrate Dependencies
 frame-benchmarking = { git = "https://github.com/PureStake/substrate", branch = "moonbeam-polkadot-v0.9.37" }

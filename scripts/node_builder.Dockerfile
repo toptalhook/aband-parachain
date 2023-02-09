@@ -34,4 +34,4 @@ USER aband
 EXPOSE 30333 9933 9944 9615
 VOLUME ["/data"]
 
-ENTRYPOINT ["/usr/local/bin/aband"]
+ENTRYPOINT ["/usr/local/bin/aband -- --chain kusama"]

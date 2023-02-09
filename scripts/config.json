@@ -26,6 +26,10 @@
 					"name": "alice",
 					"port": 30333,
 					"flags": [
+						"--ws-external",
+						"--rpc-external",
+						"--rpc-cors=all",
+						"--rpc-methods=Unsafe",
 						"--",
 						"--execution=wasm"
 					]
@@ -35,6 +39,10 @@
 					"name": "bob",
 					"port": 30555,
 					"flags": [
+						"--ws-external",
+						"--rpc-external",
+						"--rpc-cors=all",
+						"--rpc-methods=Unsafe",
 						"--",
 						"--execution=wasm"
 					]

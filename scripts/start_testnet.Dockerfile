@@ -24,7 +24,7 @@ RUN useradd -m -u 1000 -U -s /bin/sh -d /testnet polkadot && \
 	chown -R polkadot:polkadot /data && \
 	ln -s /data /testnet/.local/share/data
 
-COPY --from=builder /testnet/substrate-parachain-PoS-template/polkadot-launch/config.json /data
+COPY --from=builder /testnet/substrate-parachain-PoS-template/scripts/config.json /data
 
 EXPOSE 9966 30666 9955 30555 9944 30333 9999 31300
 VOLUME ["/data"]

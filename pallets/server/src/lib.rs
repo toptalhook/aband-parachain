@@ -122,12 +122,12 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-		pub fn set_server_owner(origin: OriginFor<T>, owner: T::AccountId) -> DispatchResultWithPostInfo {
+		pub fn set_server_owner(origin: OriginFor<T>, server_id: ServerId, owner: T::AccountId) -> DispatchResultWithPostInfo {
 			Ok(().into())
 		}
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-		pub fn set_fees(origin: OriginFor<T>, fee: Fees<u128>) -> DispatchResultWithPostInfo {
+		pub fn set_fees(origin: OriginFor<T>, server_id: ServerId, fee: Fees<u128>) -> DispatchResultWithPostInfo {
 			Ok(().into())
 		}
 	}

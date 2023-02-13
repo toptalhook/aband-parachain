@@ -5,7 +5,8 @@
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
 use codec::{Encode, Decode, MaxEncodedLen};
-use frame_support::RuntimeDebug;
+use frame_support::{RuntimeDebug};
+use sp_runtime::Perbill;
 use scale_info::TypeInfo;
 
 pub mod server_id;
@@ -22,6 +23,12 @@ mod benchmarking;
 
 pub type ServerId = u64;
 pub type GroupId = u64;
+
+#[derive(Encode, Decode, Clone, Eq, PartialEq, MaxEncodedLen, RuntimeDebug, TypeInfo)]
+pub enum Fees<Balance> {
+	MiningCommission(Perbill),
+	OneByte(Balance),
+}
 
 #[derive(Encode, Decode, Clone, Eq, PartialEq, MaxEncodedLen, RuntimeDebug, TypeInfo)]
 pub struct ServerDetails<AccountId, Metadata> {
@@ -116,6 +123,11 @@ pub mod pallet {
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 		pub fn set_server_owner(origin: OriginFor<T>, owner: T::AccountId) -> DispatchResultWithPostInfo {
+			Ok(().into())
+		}
+
+		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+		pub fn set_fees(origin: OriginFor<T>, fee: Fees<u128>) -> DispatchResultWithPostInfo {
 			Ok(().into())
 		}
 	}

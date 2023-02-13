@@ -1,9 +1,11 @@
 
-// pub trait ServerManager<ServerId, GroupId> {
-// 	fn try_add_new_group(server_id: ServerId, group_id: GroupId)
-// 	fn remove_old_group(server_id: ServerId, group_id: GroupId)
-//
-// }
+use frame_support::dispatch::DispatchResult;
+
+pub trait ServerManager<ServerId, GroupId> {
+	fn try_add_new_group(server_id: ServerId, group_id: GroupId) -> DispatchResult;
+	fn remove_old_group(server_id: ServerId, group_id: GroupId) -> DispatchResult;
+
+}
 
 pub trait GetServerInfo<ServerId, GroupId, AccountId> {
 	fn get_server_id_by_group(group_id: GroupId) -> Option<ServerId>;

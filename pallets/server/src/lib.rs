@@ -20,7 +20,8 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
-type ServerId = u64;
+pub type ServerId = u64;
+pub type GroupId = u64;
 
 #[derive(Encode, Decode, Clone, Eq, PartialEq, MaxEncodedLen, RuntimeDebug, TypeInfo)]
 pub struct ServerDetails<AccountId, Metadata> {
@@ -32,6 +33,7 @@ pub struct ServerDetails<AccountId, Metadata> {
 
 #[frame_support::pallet]
 pub mod pallet {
+	use super::*;
 	use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
 
@@ -40,11 +42,18 @@ pub mod pallet {
 	pub trait Config: frame_system::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+
 	}
 
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
+	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
+
+
+	#[pallet::storage]
+	#[pallet::getter(fn servers)]
+	pub type Servers<T: Config> = StorageMap<_, Twox64Concat, ServerId, ServerDetails<T::AccountId, Vec<u8>>>;
 
 	// The pallet's runtime storage items.
 	// https://docs.substrate.io/v3/runtime/storage
@@ -54,9 +63,22 @@ pub mod pallet {
 	// https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
 	pub type Something<T> = StorageValue<_, u32>;
 
-	// #[pallet::storage]
-	// #[pallet::getter(fn next_server_id)]
-	// pub type NextServerId<T: Config> = Sto
+	#[pallet::storage]
+	#[pallet::getter(fn next_server_id)]
+	pub type NextServerId<T: Config> = StorageValue<_, ServerId>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn groups_of_Server)]
+	pub type GroupsOfServer<T: Config> = StorageMap<_, Twox64Concat, ServerId, Vec<GroupId>, ValueQuery>;
+
+	#[pallet::type_value]
+	pub fn MaxGroupOfServerOnEmpty<T: Config>() -> GroupId {
+		1000 as GroupId
+	}
+
+	#[pallet::storage]
+	#[pallet::getter(fn max_group)]
+	pub type MaxGroupOfServer<T: Config> = StorageMap<_, Twox64Concat, ServerId, GroupId, ValueQuery, MaxGroupOfServerOnEmpty<T>>;
 
 	// Pallets use events to inform users when important changes are made.
 	// https://docs.substrate.io/v3/runtime/events-and-errors
@@ -85,41 +107,16 @@ pub mod pallet {
 	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
-		/// An example dispatchable that takes a singles value as a parameter, writes the value to
-		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
+
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-		pub fn do_something(origin: OriginFor<T>, something: u32) -> DispatchResultWithPostInfo {
-			// Check that the extrinsic was signed and get the signer.
-			// This function will return an error if the extrinsic is not signed.
-			// https://docs.substrate.io/v3/runtime/origins
-			let who = ensure_signed(origin)?;
+		pub fn register(origin: OriginFor<T>, metadata: Vec<u8>) -> DispatchResultWithPostInfo {
 
-			// Update storage.
-			<Something<T>>::put(something);
-
-			// Emit an event.
-			Self::deposit_event(Event::SomethingStored(something, who));
-			// Return a successful DispatchResultWithPostInfo
 			Ok(().into())
 		}
 
-		/// An example dispatchable that may throw a custom error.
-		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().reads_writes(1,1))]
-		pub fn cause_error(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
-			let _who = ensure_signed(origin)?;
-
-			// Read a value from storage.
-			match <Something<T>>::get() {
-				// Return an error if the value has not been set.
-				None => Err(Error::<T>::NoneValue)?,
-				Some(old) => {
-					// Increment the value read from storage; will error in the event of overflow.
-					let new = old.checked_add(1).ok_or(Error::<T>::StorageOverflow)?;
-					// Update the value in storage with the incremented result.
-					<Something<T>>::put(new);
-					Ok(().into())
-				},
-			}
+		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+		pub fn set_server_owner(origin: OriginFor<T>, owner: T::AccountId) -> DispatchResultWithPostInfo {
+			Ok(().into())
 		}
 	}
 }

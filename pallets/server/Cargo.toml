@@ -20,7 +20,7 @@ frame-benchmarking = { git = "https://github.com/PureStake/substrate", default-f
 frame-support = { git = "https://github.com/PureStake/substrate", default-features = false, branch = "moonbeam-polkadot-v0.9.37" }
 frame-system = { git = "https://github.com/PureStake/substrate", default-features = false, branch = "moonbeam-polkadot-v0.9.37" }
 sp-runtime = { git = "https://github.com/PureStake/substrate", default-features = false, branch = "moonbeam-polkadot-v0.9.37" }
-
+sp-std = { git = "https://github.com/PureStake/substrate", default-features = false, branch = "moonbeam-polkadot-v0.9.37" }
 
 [dev-dependencies]
 serde = { version = "1.0.132" }
@@ -40,5 +40,6 @@ std = [
 	"frame-support/std",
 	"frame-system/std",
 	"sp-runtime/std",
+	"sp-std/std",
 ]
 try-runtime = [ "frame-support/try-runtime" ]

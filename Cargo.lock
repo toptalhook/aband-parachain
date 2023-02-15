@@ -129,6 +129,7 @@ dependencies = [
  "pallet-nomination-pools-runtime-api",
  "pallet-offences",
  "pallet-randomness-collective-flip",
+ "pallet-server",
  "pallet-session",
  "pallet-session-benchmarking",
  "pallet-staking",
@@ -6181,6 +6182,7 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]

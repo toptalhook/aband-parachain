@@ -8,6 +8,8 @@ use codec::{Encode, Decode, MaxEncodedLen};
 use frame_support::{RuntimeDebug};
 use sp_runtime::Perbill;
 use scale_info::TypeInfo;
+use sp_std::vec::Vec;
+use sp_runtime::traits::{AccountIdConversion, BlockNumberProvider, CheckedAdd};
 
 pub mod server_id;
 pub mod traits;
@@ -23,6 +25,7 @@ mod benchmarking;
 
 pub type ServerId = u64;
 pub type GroupId = u64;
+pub type Balance = u128;
 
 #[derive(Encode, Decode, Clone, Eq, PartialEq, MaxEncodedLen, RuntimeDebug, TypeInfo)]
 pub enum Fees<Balance> {
@@ -50,6 +53,8 @@ pub mod pallet {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
+		type ServerIdConvertToAccountId: From<ServerId> + AccountIdConversion<Self::AccountId>;
+
 	}
 
 	#[pallet::pallet]
@@ -72,7 +77,7 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn next_server_id)]
-	pub type NextServerId<T: Config> = StorageValue<_, ServerId>;
+	pub type NextServerId<T: Config> = StorageValue<_, ServerId, ValueQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn groups_of_Server)]
@@ -87,6 +92,14 @@ pub mod pallet {
 	#[pallet::getter(fn max_group)]
 	pub type MaxGroupOfServer<T: Config> = StorageMap<_, Twox64Concat, ServerId, GroupId, ValueQuery, MaxGroupOfServerOnEmpty<T>>;
 
+	#[pallet::storage]
+	#[pallet::getter(fn one_byte_pay_of_server)]
+	pub type OneBytePayOfServer<T: Config> = StorageMap<_, Twox64Concat, ServerId, Balance, ValueQuery>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn mining_commission_of_server)]
+	pub type MiningCommissionOfServer<T: Config> = StorageMap<_, Twox64Concat, ServerId, Perbill, ValueQuery>;
+
 	// Pallets use events to inform users when important changes are made.
 	// https://docs.substrate.io/v3/runtime/events-and-errors
 	#[pallet::event]
@@ -95,6 +108,19 @@ pub mod pallet {
 		/// Event documentation should end with an array that provides descriptive names for event
 		/// parameters. [something, who]
 		SomethingStored(u32, T::AccountId),
+		Register{
+			server_id: ServerId,
+			creator: T::AccountId,
+		},
+		SetServerOwner{
+			server_id: ServerId,
+			new_owner: Option<T::AccountId>,
+		},
+		SetServerFees{
+			server_id: ServerId,
+			fee: Fees<Balance>,
+		},
+
 	}
 
 	// Errors inform users that something went wrong.
@@ -104,6 +130,9 @@ pub mod pallet {
 		NoneValue,
 		/// Errors should have helpful documentation associated with them.
 		StorageOverflow,
+		ServerNotExists,
+		NotServerOwner,
+		UndefinedFee,
 	}
 
 	#[pallet::hooks]
@@ -117,17 +146,57 @@ pub mod pallet {
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 		pub fn register(origin: OriginFor<T>, metadata: Vec<u8>) -> DispatchResultWithPostInfo {
+			let creator = ensure_signed(origin)?;
+			let next_server_id = NextServerId::<T>::get();
+			Servers::<T>::insert(next_server_id, ServerDetails {
+				creator: creator.clone(),
+				owner: Some(creator.clone()),
+				server_account_id: T::ServerIdConvertToAccountId::from(next_server_id).into_account_truncating(),
+				metadata: metadata,
+			});
+			NextServerId::<T>::put(next_server_id.checked_add(1 as ServerId).ok_or(Error::<T>::StorageOverflow)?);
+
+			Self::deposit_event(Event::Register { server_id: next_server_id, creator });
 
 			Ok(().into())
 		}
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-		pub fn set_server_owner(origin: OriginFor<T>, server_id: ServerId, owner: T::AccountId) -> DispatchResultWithPostInfo {
+		pub fn set_server_owner(origin: OriginFor<T>, server_id: ServerId, new_owner: Option<T::AccountId>) -> DispatchResultWithPostInfo {
+			let old_owner = ensure_signed(origin)?;
+			let mut server_info = Servers::<T>::get(server_id).ok_or(Error::<T>::ServerNotExists)?;
+			ensure!(Some(old_owner) == server_info.owner, Error::<T>::NotServerOwner);
+			server_info.owner = new_owner.clone();
+			Servers::<T>::insert(server_id, server_info);
+			Self::deposit_event(Event::SetServerOwner {
+				server_id,
+				new_owner,
+			});
 			Ok(().into())
 		}
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-		pub fn set_fees(origin: OriginFor<T>, server_id: ServerId, fee: Fees<u128>) -> DispatchResultWithPostInfo {
+		pub fn set_server_fees(origin: OriginFor<T>, server_id: ServerId, fee: Fees<Balance>) -> DispatchResultWithPostInfo {
+			let owner = ensure_signed(origin)?;
+			let server_info = Servers::<T>::get(server_id).ok_or(Error::<T>::ServerNotExists)?;
+			ensure!(Some(owner.clone()) == server_info.owner, Error::<T>::NotServerOwner);
+
+			match fee {
+				Fees::MiningCommission(p) => {
+					MiningCommissionOfServer::<T>::insert(server_id, p);
+
+				},
+				Fees::OneByte(b) => {
+					OneBytePayOfServer::<T>::insert(server_id, b);
+				},
+				_ => {
+					return Err(Error::<T>::UndefinedFee)?;
+				}
+			};
+			Self::deposit_event(Event::SetServerFees{
+				server_id,
+				fee,
+			});
 			Ok(().into())
 		}
 	}

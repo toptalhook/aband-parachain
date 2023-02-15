@@ -133,6 +133,8 @@ construct_runtime!(
 		// local
 		TemplateModule: pallet_template = 60,
 		Group: pallet_group = 61,
+		Server: pallet_server = 62,
+
 		// assets
 		AssetsManage: pallet_assets_manage = 70,
 		Tokens: orml_tokens = 71,

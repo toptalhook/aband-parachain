@@ -7,7 +7,7 @@ use sp_runtime::TypeId;
 pub struct GroupId<Id>(pub Id);
 
 impl<Id> TypeId for GroupId<Id> {
-	const TYPE_ID: [u8; 4] = *b"band";
+	const TYPE_ID: [u8; 4] = *b"grou";
 }
 
 impl<Id> From<Id> for GroupId<Id> {

@@ -146,6 +146,10 @@ pub mod pallet {
 	pub type CandiesOfGroup<T: Config> = StorageMap<_, Twox64Concat, GroupId, Vec<CandyId>, ValueQuery>;
 
 	#[pallet::storage]
+	#[pallet::getter(fn server_of)]
+	pub type ServerOf<T: Config> = StorageMap<_, Twox64Concat, GroupId, ServerId, OptionQuery>;
+
+	#[pallet::storage]
 	#[pallet::getter(fn black_list_of_group)]
 	pub type BlackListOfGroup<T: Config> = StorageMap<_, Twox64Concat, GroupId, Vec<T::AccountId>, ValueQuery>;
 
@@ -161,6 +165,19 @@ pub mod pallet {
 		/// Event documentation should end with an array that provides descriptive names for event
 		/// parameters. [something, who]
 		SomethingStored(u32, T::AccountId),
+		CreateGroup{
+			creator: T::AccountId,
+			group_id: GroupId,
+		},
+		Invite {
+			who: T::AccountId,
+			invitee: T::AccountId,
+		},
+
+		EnterGroup {
+			who: T::AccountId,
+			group_id: GroupId,
+		}
 	}
 
 	// Errors inform users that something went wrong.
@@ -172,6 +189,12 @@ pub mod pallet {
 		StorageOverflow,
 		GroupNotExists,
 		CandyNotExists,
+		ServerAtCapacity,
+		InBlackList,
+		NotGroupOwner,
+		GroupAtCapacity,
+		PrivateGroup,
+		PermissionDenied,
 	}
 
 	#[pallet::hooks]
@@ -184,10 +207,11 @@ pub mod pallet {
 	impl<T: Config> Pallet<T> {
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-		pub fn create_group(origin: OriginFor<T>, server_id: ServerId, min_liquidity: Option<Liquidity<MultiAssetOf<T>>>, max_members_number: u32, commission: Perbill, visibility: Visibility, join_fee: Option<MultiAssetOf<T>>) -> DispatchResultWithPostInfo {
+		pub fn create_group(origin: OriginFor<T>, server_id: Option<ServerId>, min_liquidity: Option<Liquidity<MultiAssetOf<T>>>, max_members_number: u32, commission: Perbill, visibility: Visibility, join_fee: Option<MultiAssetOf<T>>) -> DispatchResultWithPostInfo {
 			let creator = ensure_signed(origin)?;
-			// todo group_account_id now()
+
 			let next_group_id = NextGroupId::<T>::get();
+			let server_id = server_id.unwrap_or_else(|| Self::get_official_server());
 			let group_account_id = T::GroupIdConvertToAccountId::from(next_group_id).into_account_truncating();
 			Groups::<T>::insert(next_group_id, GroupInfo {
 				owner: Some(creator.clone()),
@@ -202,18 +226,50 @@ pub mod pallet {
 				members: vec![creator.clone()],
 			});
 			NextGroupId::<T>::put(next_group_id.checked_add(1u64).ok_or(Error::<T>::StorageOverflow)?);
+			Self::server_try_do(server_id, next_group_id)?;
+			Self::deposit_event(Event::CreateGroup {
+				creator,
+				group_id: next_group_id,
+			});
+
 			Ok(().into())
 		}
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 		pub fn enter_group(origin: OriginFor<T>, group_id: GroupId, new_member: T::AccountId, liquidity: Option<Liquidity<MultiAssetOf<T>>>) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
-			Groups::<T>::mutate_exists(group_id, |g| -> DispatchResultWithPostInfo{
-				let mut group = g.take().ok_or(Error::<T>::GroupNotExists)?;
-				group.members.push(new_member.clone());
-				*g = Some(group);
-				Ok(().into())
-			})?;
+
+			let mut group_info = Groups::<T>::get(group_id).ok_or(Error::<T>::GroupNotExists)?;
+
+			let is_invited= who != new_member;
+			ensure!(BlackListOfGroup::<T>::get(group_id).iter().position(|p| p == &new_member).is_none(), Error::<T>::InBlackList);
+
+			if is_invited {
+				// must be group owner
+				ensure!( Some(who.clone()) == group_info.owner, Error::<T>::NotGroupOwner);
+				InviteesOfGroup::<T>::mutate(group_id, |g| {
+					g.retain(|w| w != &new_member);
+					g.push(new_member.clone());
+				});
+				Self::deposit_event(Event::Invite {
+					who,
+					invitee: new_member,
+				});
+				return Ok(().into());
+			}
+
+			ensure!(group_info.max_members_number > group_info.members.len() as u32, Error::<T>::GroupAtCapacity);
+
+			ensure!((group_info.visibility == Visibility::Private && Some(who.clone()) == group_info.owner) ||
+				group_info.visibility == Visibility::Public, Error::<T>::PermissionDenied);
+
+			group_info.members.retain(|w| w != &new_member);
+			group_info.members.push(new_member.clone());
+			group_info.max_members_number.checked_add(1 as u32).ok_or(Error::<T>::StorageOverflow)?;
+
+			Groups::<T>::insert(group_id, group_info);
+			Self::deposit_event(Event::EnterGroup { who: new_member, group_id });
+
 			Ok(().into())
 		}
 
@@ -272,5 +328,24 @@ pub mod pallet {
 		pub fn now() -> T::BlockNumber {
 			frame_system::Pallet::<T>::current_block_number()
 		}
+
+		pub fn get_official_server() -> ServerId {
+			0 as ServerId
+		}
+
+		pub fn is_server_at_capacity(server_id: ServerId) -> bool {
+			// todo
+			false
+		}
+
+		pub fn server_try_do(server_id: ServerId, group_id: GroupId) -> DispatchResult {
+			// is at capacity
+			// server
+			// group
+			Ok(())
+		}
+
 	}
+
+
 }

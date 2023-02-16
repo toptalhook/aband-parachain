@@ -259,17 +259,17 @@ pub mod pallet {
 			}
 
 			ensure!(group_info.max_members_number > group_info.members.len() as u32, Error::<T>::GroupAtCapacity);
-
 			ensure!((group_info.visibility == Visibility::Private && Some(who.clone()) == group_info.owner) ||
 				group_info.visibility == Visibility::Public, Error::<T>::PermissionDenied);
+
+			Self::try_add_liquidity(group_id, liquidity)?;
 
 			group_info.members.retain(|w| w != &new_member);
 			group_info.members.push(new_member.clone());
 			group_info.max_members_number.checked_add(1 as u32).ok_or(Error::<T>::StorageOverflow)?;
-
 			Groups::<T>::insert(group_id, group_info);
-			Self::deposit_event(Event::EnterGroup { who: new_member, group_id });
 
+			Self::deposit_event(Event::EnterGroup { who: new_member, group_id });
 			Ok(().into())
 		}
 
@@ -342,6 +342,10 @@ pub mod pallet {
 			// is at capacity
 			// server
 			// group
+			Ok(())
+		}
+
+		pub fn try_add_liquidity(group_id: GroupId, liquidity: Option<Liquidity<MultiAssetOf<T>>>) -> DispatchResult {
 			Ok(())
 		}
 

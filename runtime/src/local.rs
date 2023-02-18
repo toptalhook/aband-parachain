@@ -1,4 +1,3 @@
-
 use super::*;
 
 // Configure the pallet-template in pallets/template.
@@ -20,7 +19,6 @@ impl pallet_group::Config for Runtime {
 }
 
 impl pallet_server::Config for Runtime {
-
 	type RuntimeEvent = RuntimeEvent;
 	type ServerIdConvertToAccountId = pallet_server::server_id::ServerId<u64>;
 }

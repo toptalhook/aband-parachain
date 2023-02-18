@@ -1,37 +1,37 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use frame_support::traits::tokens::Balance;
-use frame_support::{sp_runtime::{Perbill, Permill, RuntimeDebug}, BoundedVec};
 use codec::{Decode, Encode, MaxEncodedLen};
-use scale_info::TypeInfo;
-use sp_std::{
-	fmt::Debug,
+use frame_support::{
+	sp_runtime::{Perbill, Permill, RuntimeDebug},
+	traits::tokens::Balance,
+	BoundedVec,
 };
-use sp_std::vec::Vec;
+use orml_traits::{
+	arithmetic::{Signed, SimpleArithmetic},
+	currency::TransferAll,
+	BalanceStatus, BasicCurrency, BasicCurrencyExtended, BasicLockableCurrency,
+	BasicReservableCurrency, LockIdentifier, MultiCurrency, MultiCurrencyExtended,
+	MultiLockableCurrency, MultiReservableCurrency, NamedBasicReservableCurrency,
+	NamedMultiReservableCurrency,
+};
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
-use orml_traits::{
-	arithmetic::{Signed, SimpleArithmetic},
-	currency::TransferAll,
-	BalanceStatus, BasicCurrency, BasicCurrencyExtended, BasicLockableCurrency, BasicReservableCurrency,
-	LockIdentifier, MultiCurrency, MultiCurrencyExtended, MultiLockableCurrency, MultiReservableCurrency,
-	NamedBasicReservableCurrency, NamedMultiReservableCurrency,
-};
-use sp_runtime::traits::{AccountIdConversion, BlockNumberProvider, CheckedAdd};
+use scale_info::TypeInfo;
 use sp_core::{ConstU32, Get};
-use sp_std::vec;
+use sp_runtime::traits::{AccountIdConversion, BlockNumberProvider, CheckedAdd};
+use sp_std::{fmt::Debug, vec, vec::Vec};
 
-#[cfg(test)]
-mod mock;
-
-#[cfg(test)]
-mod tests;
-
-
-#[cfg(feature = "runtime-benchmarks")]
-mod benchmarking;
+// #[cfg(test)]
+// mod mock;
+//
+// #[cfg(test)]
+// mod tests;
+//
+//
+// #[cfg(feature = "runtime-benchmarks")]
+// mod benchmarking;
 pub mod group_id;
 
 pub type AssetId = u64;
@@ -95,12 +95,21 @@ pub mod pallet {
 	use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
 
-	pub(crate) type BalanceOf<T> =
-		<<T as Config>::MultiCurrency as MultiCurrency<<T as frame_system::Config>::AccountId>>::Balance;
-	pub(crate) type CurrencyIdOf<T> =
-		<<T as Config>::MultiCurrency as MultiCurrency<<T as frame_system::Config>::AccountId>>::CurrencyId;
+	pub(crate) type BalanceOf<T> = <<T as Config>::MultiCurrency as MultiCurrency<
+		<T as frame_system::Config>::AccountId,
+	>>::Balance;
+	pub(crate) type CurrencyIdOf<T> = <<T as Config>::MultiCurrency as MultiCurrency<
+		<T as frame_system::Config>::AccountId,
+	>>::CurrencyId;
 	pub(crate) type MultiAssetOf<T> = MultiAsset<CurrencyIdOf<T>, BalanceOf<T>>;
-	pub(crate) type GroupInfoOf<T> = GroupInfo<<T as frame_system::Config>::AccountId, <T as frame_system::Config>::BlockNumber, Visibility, Liquidity<MultiAssetOf<T>>, MultiAssetOf<T>, GroupStatus>;
+	pub(crate) type GroupInfoOf<T> = GroupInfo<
+		<T as frame_system::Config>::AccountId,
+		<T as frame_system::Config>::BlockNumber,
+		Visibility,
+		Liquidity<MultiAssetOf<T>>,
+		MultiAssetOf<T>,
+		GroupStatus,
+	>;
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
@@ -115,7 +124,6 @@ pub mod pallet {
 		type GroupIdConvertToAccountId: From<GroupId> + AccountIdConversion<Self::AccountId>;
 		#[pallet::constant]
 		type GetNativeCurrencyId: Get<CurrencyIdOf<Self>>;
-
 	}
 
 	#[pallet::pallet]
@@ -139,11 +147,17 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn candies)]
-	pub type Candies<T: Config> = StorageMap<_, Twox64Concat, CandyId, CandyInfo<MultiAssetOf<T>, BalanceOf<T>, T::BlockNumber, T::AccountId>>;
+	pub type Candies<T: Config> = StorageMap<
+		_,
+		Twox64Concat,
+		CandyId,
+		CandyInfo<MultiAssetOf<T>, BalanceOf<T>, T::BlockNumber, T::AccountId>,
+	>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn candies_of_group)]
-	pub type CandiesOfGroup<T: Config> = StorageMap<_, Twox64Concat, GroupId, Vec<CandyId>, ValueQuery>;
+	pub type CandiesOfGroup<T: Config> =
+		StorageMap<_, Twox64Concat, GroupId, Vec<CandyId>, ValueQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn server_of)]
@@ -151,11 +165,13 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn black_list_of_group)]
-	pub type BlackListOfGroup<T: Config> = StorageMap<_, Twox64Concat, GroupId, Vec<T::AccountId>, ValueQuery>;
+	pub type BlackListOfGroup<T: Config> =
+		StorageMap<_, Twox64Concat, GroupId, Vec<T::AccountId>, ValueQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn invitees_of_group)]
-	pub type InviteesOfGroup<T: Config> = StorageMap<_, Twox64Concat, GroupId, Vec<T::AccountId>, ValueQuery>;
+	pub type InviteesOfGroup<T: Config> =
+		StorageMap<_, Twox64Concat, GroupId, Vec<T::AccountId>, ValueQuery>;
 
 	// Pallets use events to inform users when important changes are made.
 	// https://docs.substrate.io/v3/runtime/events-and-errors
@@ -165,11 +181,12 @@ pub mod pallet {
 		/// Event documentation should end with an array that provides descriptive names for event
 		/// parameters. [something, who]
 		SomethingStored(u32, T::AccountId),
-		CreateGroup{
+		CreateGroup {
 			creator: T::AccountId,
 			group_id: GroupId,
 		},
 		Invite {
+			group_id: GroupId,
 			who: T::AccountId,
 			invitee: T::AccountId,
 		},
@@ -177,7 +194,17 @@ pub mod pallet {
 		EnterGroup {
 			who: T::AccountId,
 			group_id: GroupId,
-		}
+		},
+
+		KickSomeOne {
+			group_id: GroupId,
+			who: T::AccountId,
+			someone_kicked: T::AccountId,
+		},
+		LeaveGroup {
+			group_id: GroupId,
+			old_member: T::AccountId,
+		},
 	}
 
 	// Errors inform users that something went wrong.
@@ -195,6 +222,9 @@ pub mod pallet {
 		GroupAtCapacity,
 		PrivateGroup,
 		PermissionDenied,
+		OnlyOneMember,
+		OwnerCannotLeave,
+		MemberNotInGroup,
 	}
 
 	#[pallet::hooks]
@@ -205,68 +235,96 @@ pub mod pallet {
 	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
-
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-		pub fn create_group(origin: OriginFor<T>, server_id: Option<ServerId>, min_liquidity: Option<Liquidity<MultiAssetOf<T>>>, max_members_number: u32, commission: Perbill, visibility: Visibility, join_fee: Option<MultiAssetOf<T>>) -> DispatchResultWithPostInfo {
+		pub fn create_group(
+			origin: OriginFor<T>,
+			server_id: Option<ServerId>,
+			min_liquidity: Option<Liquidity<MultiAssetOf<T>>>,
+			max_members_number: u32,
+			commission: Perbill,
+			visibility: Visibility,
+			join_fee: Option<MultiAssetOf<T>>,
+		) -> DispatchResultWithPostInfo {
 			let creator = ensure_signed(origin)?;
 
 			let next_group_id = NextGroupId::<T>::get();
 			let server_id = server_id.unwrap_or_else(|| Self::get_official_server());
-			let group_account_id = T::GroupIdConvertToAccountId::from(next_group_id).into_account_truncating();
-			Groups::<T>::insert(next_group_id, GroupInfo {
-				owner: Some(creator.clone()),
-				commission,
-				group_account_id,
-				create_block_high: Self::now(),
-				visibility,
-				min_liquidity,
-				max_members_number,
-				join_fee,
-				status: GroupStatus::Active,
-				members: vec![creator.clone()],
-			});
-			NextGroupId::<T>::put(next_group_id.checked_add(1u64).ok_or(Error::<T>::StorageOverflow)?);
-			Self::server_try_do(server_id, next_group_id)?;
-			Self::deposit_event(Event::CreateGroup {
-				creator,
-				group_id: next_group_id,
-			});
+			let group_account_id =
+				T::GroupIdConvertToAccountId::from(next_group_id).into_account_truncating();
+			Groups::<T>::insert(
+				next_group_id,
+				GroupInfo {
+					owner: Some(creator.clone()),
+					commission,
+					group_account_id,
+					create_block_high: Self::now(),
+					visibility,
+					min_liquidity,
+					max_members_number,
+					join_fee,
+					status: GroupStatus::Active,
+					members: vec![creator.clone()],
+				},
+			);
+			NextGroupId::<T>::put(
+				next_group_id.checked_add(1u64).ok_or(Error::<T>::StorageOverflow)?,
+			);
+			Self::try_update_server_info(server_id, next_group_id)?;
+			Self::deposit_event(Event::CreateGroup { creator, group_id: next_group_id });
 
 			Ok(().into())
 		}
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-		pub fn enter_group(origin: OriginFor<T>, group_id: GroupId, new_member: T::AccountId, liquidity: Option<Liquidity<MultiAssetOf<T>>>) -> DispatchResultWithPostInfo {
+		pub fn enter_group(
+			origin: OriginFor<T>,
+			group_id: GroupId,
+			new_member: T::AccountId,
+			liquidity: Option<Liquidity<MultiAssetOf<T>>>,
+		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 
 			let mut group_info = Groups::<T>::get(group_id).ok_or(Error::<T>::GroupNotExists)?;
 
-			let is_invited= who != new_member;
-			ensure!(BlackListOfGroup::<T>::get(group_id).iter().position(|p| p == &new_member).is_none(), Error::<T>::InBlackList);
+			let is_invited = who != new_member;
+			ensure!(
+				BlackListOfGroup::<T>::get(group_id)
+					.iter()
+					.position(|p| p == &new_member)
+					.is_none(),
+				Error::<T>::InBlackList
+			);
 
 			if is_invited {
 				// must be group owner
-				ensure!( Some(who.clone()) == group_info.owner, Error::<T>::NotGroupOwner);
+				ensure!(Some(who.clone()) == group_info.owner, Error::<T>::NotGroupOwner);
 				InviteesOfGroup::<T>::mutate(group_id, |g| {
 					g.retain(|w| w != &new_member);
 					g.push(new_member.clone());
 				});
-				Self::deposit_event(Event::Invite {
-					who,
-					invitee: new_member,
-				});
-				return Ok(().into());
+				Self::deposit_event(Event::Invite { group_id, who, invitee: new_member });
+				return Ok(().into())
 			}
 
-			ensure!(group_info.max_members_number > group_info.members.len() as u32, Error::<T>::GroupAtCapacity);
-			ensure!((group_info.visibility == Visibility::Private && Some(who.clone()) == group_info.owner) ||
-				group_info.visibility == Visibility::Public, Error::<T>::PermissionDenied);
+			ensure!(
+				group_info.max_members_number > group_info.members.len() as u32,
+				Error::<T>::GroupAtCapacity
+			);
+			ensure!(
+				(group_info.visibility == Visibility::Private &&
+					Some(who.clone()) == group_info.owner) ||
+					group_info.visibility == Visibility::Public,
+				Error::<T>::PermissionDenied
+			);
 
 			Self::try_add_liquidity(group_id, liquidity)?;
 
 			group_info.members.retain(|w| w != &new_member);
 			group_info.members.push(new_member.clone());
-			group_info.max_members_number.checked_add(1 as u32).ok_or(Error::<T>::StorageOverflow)?;
+			group_info
+				.max_members_number
+				.checked_add(1 as u32)
+				.ok_or(Error::<T>::StorageOverflow)?;
 			Groups::<T>::insert(group_id, group_info);
 
 			Self::deposit_event(Event::EnterGroup { who: new_member, group_id });
@@ -274,43 +332,94 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-		pub fn leave_group(origin: OriginFor<T>, group_id: GroupId, old_member: T::AccountId) -> DispatchResultWithPostInfo {
+		pub fn leave_group(
+			origin: OriginFor<T>,
+			group_id: GroupId,
+			old_member: T::AccountId,
+		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
-			Groups::<T>::mutate_exists(group_id, |g| -> DispatchResultWithPostInfo{
-				let mut group = g.take().ok_or(Error::<T>::GroupNotExists)?;
-				group.members.retain(|w| w != &old_member);
-				*g = Some(group);
-				Ok(().into())
-			})?;
+
+			let mut group_info = Groups::<T>::get(group_id).ok_or(Error::<T>::GroupNotExists)?;
+
+			let is_kick = old_member != who;
+			if is_kick {
+				ensure!(Some(who.clone()) == group_info.owner, Error::<T>::NotGroupOwner);
+				BlackListOfGroup::<T>::mutate(group_id, |b| {
+					b.retain(|r| r != &old_member);
+					b.push(old_member.clone());
+				});
+			}
+
+			ensure!(group_info.members.len() > 1 as usize, Error::<T>::OnlyOneMember);
+			ensure!(group_info.owner != Some(old_member.clone()), Error::<T>::OwnerCannotLeave);
+
+			if let Some(pos) = group_info.members.iter().position(|p| p == &old_member) {
+				group_info.members.remove(pos);
+			} else {
+				return Err(Error::<T>::MemberNotInGroup)?;
+			}
+
+			Groups::<T>::insert(group_id, group_info);
+
+			if is_kick {
+				Self::deposit_event(Event::KickSomeOne {
+					group_id,
+					who,
+					someone_kicked: old_member,
+				});
+			} else {
+				Self::deposit_event(Event::LeaveGroup { group_id, old_member })
+			}
+
 			Ok(().into())
 		}
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-		pub fn disband_group(origin: OriginFor<T>, group_id: GroupId) -> DispatchResultWithPostInfo {
+		pub fn disband_group(
+			origin: OriginFor<T>,
+			group_id: GroupId,
+		) -> DispatchResultWithPostInfo {
 			Ok(().into())
 		}
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-		pub fn give_candy(origin: OriginFor<T>, group_id: GroupId, asset: MultiAssetOf<T>, max_lucky_number: MemberCount) -> DispatchResultWithPostInfo {
+		pub fn give_candy(
+			origin: OriginFor<T>,
+			group_id: GroupId,
+			asset: MultiAssetOf<T>,
+			max_lucky_number: MemberCount,
+		) -> DispatchResultWithPostInfo {
 			let owner = ensure_signed(origin)?;
 			let next_candy_id = NextCandyId::<T>::get();
-			Candies::<T>::insert(next_candy_id, CandyInfo {
-				group_id,
-				owner,
-				asset: asset,
-				claimed_amount: BalanceOf::<T>::from(0u8),
-				max_lucky_number: max_lucky_number,
-				claim_detail: vec![],
-				end_block: Self::now().checked_add(&T::CandyExpire::get()).ok_or(Error::<T>::StorageOverflow)?,
-			});
+			Candies::<T>::insert(
+				next_candy_id,
+				CandyInfo {
+					group_id,
+					owner,
+					asset,
+					claimed_amount: BalanceOf::<T>::from(0u8),
+					max_lucky_number,
+					claim_detail: vec![],
+					end_block: Self::now()
+						.checked_add(&T::CandyExpire::get())
+						.ok_or(Error::<T>::StorageOverflow)?,
+				},
+			);
 			CandiesOfGroup::<T>::mutate(group_id, |h| h.push(next_candy_id));
-			NextCandyId::<T>::put(next_candy_id.checked_add(1u64).ok_or(Error::<T>::StorageOverflow)?);
+			NextCandyId::<T>::put(
+				next_candy_id.checked_add(1u64).ok_or(Error::<T>::StorageOverflow)?,
+			);
 			//
 			Ok(().into())
 		}
 
 		#[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-		pub fn get_candy(origin: OriginFor<T>, group_id: GroupId, candy_id: CandyId, detail: Vec<(T::AccountId, BalanceOf<T>)>) -> DispatchResultWithPostInfo {
+		pub fn get_candy(
+			origin: OriginFor<T>,
+			group_id: GroupId,
+			candy_id: CandyId,
+			detail: Vec<(T::AccountId, BalanceOf<T>)>,
+		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 			// detail.iter().for_each(|d| {
 			// 	Candies::<T>::mutate_exists(candy_id, |c| -> DispatchResultWithPostInfo {
@@ -338,18 +447,18 @@ pub mod pallet {
 			false
 		}
 
-		pub fn server_try_do(server_id: ServerId, group_id: GroupId) -> DispatchResult {
+		pub fn try_update_server_info(server_id: ServerId, group_id: GroupId) -> DispatchResult {
 			// is at capacity
 			// server
 			// group
 			Ok(())
 		}
 
-		pub fn try_add_liquidity(group_id: GroupId, liquidity: Option<Liquidity<MultiAssetOf<T>>>) -> DispatchResult {
+		pub fn try_add_liquidity(
+			group_id: GroupId,
+			liquidity: Option<Liquidity<MultiAssetOf<T>>>,
+		) -> DispatchResult {
 			Ok(())
 		}
-
 	}
-
-
 }

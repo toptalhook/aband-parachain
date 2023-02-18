@@ -1,7 +1,6 @@
 use super::*;
-use codec::{Encode, Decode};
-use sp_runtime::traits::{AccountIdConversion};
-use sp_runtime::TypeId;
+use codec::{Decode, Encode};
+use sp_runtime::{traits::AccountIdConversion, TypeId};
 
 #[derive(Encode, Decode)]
 pub struct ServerId<Id>(pub Id);

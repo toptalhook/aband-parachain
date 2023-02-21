@@ -5423,7 +5423,7 @@ dependencies = [
 [[package]]
 name = "pallet-assets-manage"
 version = "0.1.0"
-source = "git+https://github.com/Aband-Network/assets.git?branch=aband-polkadot-v0.9.37#f1aba12d4f33c92d396daac1e44b9f52fe3e7261"
+source = "git+https://github.com/Aband-Network/assets.git?branch=aband-polkadot-v0.9.37#809a54b66c51a7100652055d2c201e487ea2c7dc"
 dependencies = [
  "frame-support",
  "frame-system",

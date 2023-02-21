@@ -73,7 +73,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: create_runtime_str!("Aband Network"),
 	impl_name: create_runtime_str!("Aband Network"),
 	authoring_version: 1,
-	spec_version: 2023022101,
+	spec_version: 2023022102,
 	impl_version: 0,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,

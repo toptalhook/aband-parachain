@@ -125,6 +125,7 @@ dependencies = [
  "pallet-election-provider-multi-phase",
  "pallet-group",
  "pallet-im-online",
+ "pallet-multisig",
  "pallet-nomination-pools",
  "pallet-nomination-pools-runtime-api",
  "pallet-offences",

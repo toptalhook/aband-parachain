@@ -42,6 +42,7 @@ orml-utilities = { git = "https://github.com/Aband-Network/open-runtime-module-l
 
 
 # Substrate
+pallet-multisig = { git = "https://github.com/PureStake/substrate", default-features = false, optional = true, branch = "moonbeam-polkadot-v0.9.37" }
 frame-benchmarking = { git = "https://github.com/PureStake/substrate", default-features = false, optional = true, branch = "moonbeam-polkadot-v0.9.37" }
 frame-executive = { git = "https://github.com/PureStake/substrate", default-features = false, branch = "moonbeam-polkadot-v0.9.37" }
 frame-support = { git = "https://github.com/PureStake/substrate", default-features = false, branch = "moonbeam-polkadot-v0.9.37" }
@@ -187,6 +188,7 @@ std = [
 	"pallet-group/std",
 	"pallet-assets-manage/std",
 	"pallet-server/std",
+	"pallet-multisig/std",
 ]
 
 runtime-benchmarks = [

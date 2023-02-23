@@ -172,7 +172,7 @@ pub fn local_testnet_config() -> ChainSpec {
 		"Aband Testnet",
 		// ID
 		"aband_testnet",
-		ChainType::Local,
+		ChainType::Live,
 		move || {
 			testnet_genesis(
 				// initial collators.

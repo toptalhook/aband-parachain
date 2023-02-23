@@ -18,7 +18,7 @@ use sp_runtime::{
 	Perbill,
 };
 
-pub const PARA_ID: u32 = 2022;
+pub const PARA_ID: u32 = 2257;
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
 pub type ChainSpec =

@@ -18,7 +18,7 @@
 	"parachains": [
 		{
 			"bin": "../target/release/aband",
-			"id": "2022",
+			"id": "2257",
 			"balance": "1000000000000000000000",
 			"nodes": [
 				{

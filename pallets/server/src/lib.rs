@@ -1,17 +1,17 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use codec::{Decode, Encode, MaxEncodedLen};
-use frame_support::RuntimeDebug;
+use frame_support::dispatch::DispatchResult;
+use frame_support::{ensure, RuntimeDebug};
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
 use scale_info::TypeInfo;
-use sp_runtime::{
-	traits::{AccountIdConversion, BlockNumberProvider, CheckedAdd},
-	Perbill,
-};
+use sp_runtime::{traits::{AccountIdConversion, BlockNumberProvider, CheckedAdd}, Perbill, DispatchError};
 use sp_std::vec::Vec;
+use crate::traits::ServerManager;
+use crate::traits::GetServerInfo;
 
 pub mod server_id;
 pub mod traits;
@@ -137,6 +137,9 @@ pub mod pallet {
 		ServerNotExists,
 		NotServerOwner,
 		UndefinedFee,
+		ServerAtCapacity,
+		GroupAlreadyExists,
+		GroupNotInServer,
 	}
 
 	#[pallet::hooks]
@@ -208,5 +211,62 @@ pub mod pallet {
 			Self::deposit_event(Event::SetServerFees { server_id, fee });
 			Ok(().into())
 		}
+	}
+}
+
+impl<T: Config> traits::GetServerInfo<ServerId, GroupId, T::AccountId> for Pallet<T> {
+	fn try_server_owner(server_id: ServerId) -> Result<Option<T::AccountId>, DispatchError> {
+		let server = Servers::<T>::get(server_id).ok_or(Error::<T>::ServerNotExists)?;
+		Ok(server.owner)
+	}
+
+	fn try_get_server_creator(server_id: ServerId) -> Result<T::AccountId, DispatchError> {
+		let server = Servers::<T>::get(server_id).ok_or(Error::<T>::ServerNotExists)?;
+		Ok(server.creator)
+	}
+
+	fn try_get_server_account_id(server_id: ServerId) -> Result<T::AccountId, DispatchError> {
+		let server = Servers::<T>::get(server_id).ok_or(Error::<T>::ServerNotExists)?;
+		Ok(server.server_account_id)
+	}
+
+	fn is_at_capacity(server_id: ServerId) -> bool {
+		let max = MaxGroupOfServer::<T>::get(server_id);
+		let len: GroupId = GroupsOfServer::<T>::get(server_id).len() as GroupId;
+		if len >= max {
+			return true;
+		}
+		false
+
+	}
+}
+
+impl<T: Config>ServerManager<ServerId, GroupId> for Pallet<T> {
+	fn try_add_new_group(server_id: ServerId, group_id: GroupId) -> DispatchResult {
+
+		ensure!(!Self::is_at_capacity(server_id), Error::<T>::ServerAtCapacity);
+
+		GroupsOfServer::<T>::mutate_exists(server_id, |gs| -> DispatchResult {
+			let mut gss = gs.take().ok_or(Error::<T>::GroupAlreadyExists)?;
+			if gss.iter().position(|p| p == &group_id).is_some() {
+				return Err(Error::<T>::GroupAlreadyExists)?;
+			}
+			gss.push(group_id);
+			*gs = Some(gss);
+			Ok(())
+		})
+	}
+
+	fn try_remove_old_group(server_id: ServerId, group_id: GroupId) -> DispatchResult {
+		GroupsOfServer::<T>::mutate_exists(server_id, |gs| -> DispatchResult {
+			let mut gss = gs.take().ok_or(Error::<T>::GroupAlreadyExists)?;
+			if let Some(p) = gss.iter().position(|p| p == &group_id) {
+				gss.remove(p);
+			} else {
+				return Err(Error::<T>::GroupNotInServer)?;
+			}
+			*gs = Some(gss);
+			Ok(())
+		})
 	}
 }

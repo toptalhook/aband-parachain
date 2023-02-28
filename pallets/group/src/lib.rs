@@ -626,6 +626,7 @@ pub mod pallet {
 			return Err(Error::<T>::GroupDisbanded)?
 		}
 
+		// todo
 		pub fn is_server_owner(server_id: ServerId, maybe_owner: T::AccountId) -> bool {
 			true
 		}
@@ -634,6 +635,7 @@ pub mod pallet {
 			0 as ServerId
 		}
 
+		// todo
 		pub fn is_server_at_capacity(server_id: ServerId) -> bool {
 			// todo
 			false

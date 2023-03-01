@@ -1,6 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use codec::{Decode, Encode, MaxEncodedLen};
+use pallet_server::traits::{ServerManager, GetServerInfo};
 use frame_support::{
 	sp_runtime::{Perbill, Permill, RuntimeDebug},
 	traits::tokens::Balance,
@@ -132,6 +133,8 @@ pub mod pallet {
 		type CandyExpire: Get<Self::BlockNumber>;
 		type GroupIdConvertToAccountId: From<GroupId> + AccountIdConversion<Self::AccountId>;
 		type CandyReserveIdentifier: Get<ReserveIdentifierOf<Self>>;
+		type ServerManager: ServerManager<ServerId, GroupId>;
+		type GetServerInfo: GetServerInfo<ServerId, GroupId, Self::AccountId>;
 		#[pallet::constant]
 		type GetNativeCurrencyId: Get<CurrencyIdOf<Self>>;
 		#[pallet::constant]
@@ -626,19 +629,24 @@ pub mod pallet {
 			return Err(Error::<T>::GroupDisbanded)?
 		}
 
-		// todo
+
 		pub fn is_server_owner(server_id: ServerId, maybe_owner: T::AccountId) -> bool {
-			true
+
+			if let Ok(owner) = T::GetServerInfo::try_get_server_owner(server_id) {
+				if owner == Some(maybe_owner) {
+					return true;
+				}
+			}
+			false
 		}
 
 		pub fn get_official_server() -> ServerId {
 			0 as ServerId
 		}
 
-		// todo
+
 		pub fn is_server_at_capacity(server_id: ServerId) -> bool {
-			// todo
-			false
+			T::GetServerInfo::is_at_capacity(server_id)
 		}
 
 		pub fn try_update_server_info(
@@ -646,10 +654,11 @@ pub mod pallet {
 			group_id: GroupId,
 			is_remove_group: bool,
 		) -> DispatchResult {
-			// is at capacity
-			// server
-			// group
-			Ok(())
+			if is_remove_group {
+				T::ServerManager::try_remove_old_group(server_id, group_id)
+			} else {
+				T::ServerManager::try_add_new_group(server_id, group_id)
+			}
 		}
 
 		pub fn try_add_liquidity(
@@ -660,7 +669,7 @@ pub mod pallet {
 		}
 
 		pub fn get_server_id(group_id: GroupId) -> Option<ServerId> {
-			Some(0 as ServerId)
+			ServerOf::<T>::get(group_id)
 		}
 	}
 }

@@ -215,7 +215,7 @@ pub mod pallet {
 }
 
 impl<T: Config> traits::GetServerInfo<ServerId, GroupId, T::AccountId> for Pallet<T> {
-	fn try_server_owner(server_id: ServerId) -> Result<Option<T::AccountId>, DispatchError> {
+	fn try_get_server_owner(server_id: ServerId) -> Result<Option<T::AccountId>, DispatchError> {
 		let server = Servers::<T>::get(server_id).ok_or(Error::<T>::ServerNotExists)?;
 		Ok(server.owner)
 	}

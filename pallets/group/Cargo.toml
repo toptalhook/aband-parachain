@@ -26,6 +26,8 @@ sp-runtime = { git = "https://github.com/PureStake/substrate", default-features 
 # orml
 orml-traits = { git = "https://github.com/Aband-Network/open-runtime-module-library.git", default-features = false, branch = "aband-polkadot-v0.9.37" }
 
+# local
+pallet-server = { path = "../server", default-features = false}
 
 [dev-dependencies]
 serde = { version = "1.0.132" }
@@ -46,5 +48,6 @@ std = [
 	"sp-io/std",
 	"sp-runtime/std",
 	"sp-std/std",
+	"pallet-server/std",
 ]
 try-runtime = [ "frame-support/try-runtime" ]

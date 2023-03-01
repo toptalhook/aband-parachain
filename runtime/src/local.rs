@@ -18,6 +18,8 @@ impl pallet_group::Config for Runtime {
 	type CandyExpire = CandyExpire;
 	type GroupIdConvertToAccountId = pallet_group::group_id::GroupId<u64>;
 	type CandyReserveIdentifier = CandyReserveIdentifier;
+	type ServerManager = Server;
+	type GetServerInfo = Server;
 	type GetNativeCurrencyId = GetNativeCurrencyId;
 	type OneHundredSReserve = OneHundredSReserve;
 }

@@ -5829,6 +5829,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "orml-traits",
+ "pallet-server",
  "parity-scale-codec",
  "scale-info",
  "serde",

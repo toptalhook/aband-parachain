@@ -6,12 +6,18 @@
 			{
 				"name": "alice",
 				"wsPort": 9966,
-				"port": 30666
+				"port": 30666,
+                                "flags": [
+                                  "--base-path=../polkadot-launch/c-db-alice"
+                                ]
 			},
 			{
 				"name": "bob",
 				"wsPort": 9977,
-				"port": 30777
+				"port": 30777,
+                                "flags": [
+                                  "--base-path=../polkadot-launch/c-db-bob"
+                                ]
 			}
 		]
 	},
@@ -26,10 +32,12 @@
 					"name": "alice",
 					"port": 30333,
 					"flags": [
+                                                "--base-path=../polkadot-launch/p-db-alice",
 						"--ws-external",
 						"--rpc-external",
 						"--rpc-cors=all",
 						"--rpc-methods=Unsafe",
+                                                "--node-key=baf6de63a96301b1aa179ab4469be8534dc157224bb19f93d92d2b65cdc69b9d",
 						"--",
 						"--execution=wasm"
 					]
@@ -39,6 +47,7 @@
 					"name": "bob",
 					"port": 30555,
 					"flags": [
+                                                "--base-path=../polkadot-launch/p-db-bob",
 						"--ws-external",
 						"--rpc-external",
 						"--rpc-cors=all",

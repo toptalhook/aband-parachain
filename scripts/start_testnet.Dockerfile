@@ -1,12 +1,13 @@
 #This is the build stage for Polkadot. Here we create the binary in a temporary image .
-FROM paritytech/ci-linux:production as builder
+FROM docker.io/druaken/ci-linux:latest as builder
 
 WORKDIR /testnet
 
 COPY substrate-parachain-PoS-template /testnet/substrate-parachain-PoS-template
 COPY polkadot /testnet/polkadot
 
-RUN cd substrate-parachain-PoS-template && \
+RUN ln -s /root/.cargo/bin/cargo /usr/local/bin/cargo && \
+	cd substrate-parachain-PoS-template && \
 	make submodule && \
 	cargo build --locked --release && \
 	cd ../polkadot && \
@@ -14,7 +15,7 @@ RUN cd substrate-parachain-PoS-template && \
 
 # This is the 2nd stage: a very small image where we copy the Polkadot binary. "
 
-FROM druaken/ubuntu_aband:latest
+FROM docker.io/druaken/ubuntu_aband:latest
 
 COPY --from=builder /testnet/substrate-parachain-PoS-template/target/release/aband /usr/local/bin/
 COPY --from=builder /testnet/polkadot/target/release/polkadot /usr/local/bin/

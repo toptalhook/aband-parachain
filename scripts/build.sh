@@ -10,8 +10,8 @@ cd $PROJECT_ROOT && cd ..
 
 # Find the current version from Cargo.toml
 VERSION=`grep "^version" ./substrate-parachain-PoS-template/runtime/Cargo.toml | egrep -o "([0-9\.]+-?[0-9]+)"`
-GITUSER=druaken
-GITREPO=aband
+GITUSER=aband
+GITREPO=mainnet-node
 
 # Build the image
 echo "Building ${GITUSER}/${GITREPO}:latest docker image, hang on!"

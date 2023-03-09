@@ -1,17 +1,18 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use crate::traits::{GetServerInfo, ServerManager};
 use codec::{Decode, Encode, MaxEncodedLen};
-use frame_support::dispatch::DispatchResult;
-use frame_support::{ensure, RuntimeDebug};
+use frame_support::{dispatch::DispatchResult, ensure, RuntimeDebug};
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
 use scale_info::TypeInfo;
-use sp_runtime::{traits::{AccountIdConversion, BlockNumberProvider, CheckedAdd}, Perbill, DispatchError};
+use sp_runtime::{
+	traits::{AccountIdConversion, BlockNumberProvider, CheckedAdd},
+	DispatchError, Perbill,
+};
 use sp_std::vec::Vec;
-use crate::traits::ServerManager;
-use crate::traits::GetServerInfo;
 
 pub mod server_id;
 pub mod traits;
@@ -234,22 +235,20 @@ impl<T: Config> traits::GetServerInfo<ServerId, GroupId, T::AccountId> for Palle
 		let max = MaxGroupOfServer::<T>::get(server_id);
 		let len: GroupId = GroupsOfServer::<T>::get(server_id).len() as GroupId;
 		if len >= max {
-			return true;
+			return true
 		}
 		false
-
 	}
 }
 
-impl<T: Config>ServerManager<ServerId, GroupId> for Pallet<T> {
+impl<T: Config> ServerManager<ServerId, GroupId> for Pallet<T> {
 	fn try_add_new_group(server_id: ServerId, group_id: GroupId) -> DispatchResult {
-
 		ensure!(!Self::is_at_capacity(server_id), Error::<T>::ServerAtCapacity);
 
 		GroupsOfServer::<T>::mutate_exists(server_id, |gs| -> DispatchResult {
 			let mut gss = gs.take().ok_or(Error::<T>::GroupAlreadyExists)?;
 			if gss.iter().position(|p| p == &group_id).is_some() {
-				return Err(Error::<T>::GroupAlreadyExists)?;
+				return Err(Error::<T>::GroupAlreadyExists)?
 			}
 			gss.push(group_id);
 			*gs = Some(gss);
@@ -263,7 +262,7 @@ impl<T: Config>ServerManager<ServerId, GroupId> for Pallet<T> {
 			if let Some(p) = gss.iter().position(|p| p == &group_id) {
 				gss.remove(p);
 			} else {
-				return Err(Error::<T>::GroupNotInServer)?;
+				return Err(Error::<T>::GroupNotInServer)?
 			}
 			*gs = Some(gss);
 			Ok(())

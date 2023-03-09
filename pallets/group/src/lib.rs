@@ -1,7 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use codec::{Decode, Encode, MaxEncodedLen};
-use pallet_server::traits::{ServerManager, GetServerInfo};
 use frame_support::{
 	sp_runtime::{Perbill, Permill, RuntimeDebug},
 	traits::tokens::Balance,
@@ -19,6 +18,7 @@ use orml_traits::{
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
+use pallet_server::traits::{GetServerInfo, ServerManager};
 use scale_info::TypeInfo;
 use sp_core::{ConstU32, Get};
 use sp_runtime::traits::{
@@ -360,9 +360,11 @@ pub mod pallet {
 				Error::<T>::GroupAtCapacity
 			);
 			ensure!(
-				(group_info.visibility == Visibility::Private &&
-					Some(who.clone()) == group_info.owner) ||
-					group_info.visibility == Visibility::Public,
+				group_info.visibility == Visibility::Private &&
+					InviteesOfGroup::<T>::get(group_id)
+						.iter()
+						.position(|p| p == &new_member)
+						.is_some() || group_info.visibility == Visibility::Public,
 				Error::<T>::PermissionDenied
 			);
 
@@ -629,12 +631,10 @@ pub mod pallet {
 			return Err(Error::<T>::GroupDisbanded)?
 		}
 
-
 		pub fn is_server_owner(server_id: ServerId, maybe_owner: T::AccountId) -> bool {
-
 			if let Ok(owner) = T::GetServerInfo::try_get_server_owner(server_id) {
 				if owner == Some(maybe_owner) {
-					return true;
+					return true
 				}
 			}
 			false
@@ -643,7 +643,6 @@ pub mod pallet {
 		pub fn get_official_server() -> ServerId {
 			0 as ServerId
 		}
-
 
 		pub fn is_server_at_capacity(server_id: ServerId) -> bool {
 			T::GetServerInfo::is_at_capacity(server_id)

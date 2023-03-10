@@ -245,26 +245,22 @@ impl<T: Config> ServerManager<ServerId, GroupId> for Pallet<T> {
 	fn try_add_new_group(server_id: ServerId, group_id: GroupId) -> DispatchResult {
 		ensure!(!Self::is_at_capacity(server_id), Error::<T>::ServerAtCapacity);
 
-		GroupsOfServer::<T>::mutate_exists(server_id, |gs| -> DispatchResult {
-			let mut gss = gs.take().ok_or(Error::<T>::GroupAlreadyExists)?;
-			if gss.iter().position(|p| p == &group_id).is_some() {
+		GroupsOfServer::<T>::try_mutate(server_id, |gs| -> DispatchResult {
+			if gs.iter().position(|p| p == &group_id).is_some() {
 				return Err(Error::<T>::GroupAlreadyExists)?
 			}
-			gss.push(group_id);
-			*gs = Some(gss);
+			gs.push(group_id);
 			Ok(())
 		})
 	}
 
 	fn try_remove_old_group(server_id: ServerId, group_id: GroupId) -> DispatchResult {
-		GroupsOfServer::<T>::mutate_exists(server_id, |gs| -> DispatchResult {
-			let mut gss = gs.take().ok_or(Error::<T>::GroupAlreadyExists)?;
-			if let Some(p) = gss.iter().position(|p| p == &group_id) {
-				gss.remove(p);
+		GroupsOfServer::<T>::try_mutate(server_id, |gs| -> DispatchResult {
+			if let Some(p) = gs.iter().position(|p| p == &group_id) {
+				gs.remove(p);
 			} else {
 				return Err(Error::<T>::GroupNotInServer)?
 			}
-			*gs = Some(gss);
 			Ok(())
 		})
 	}

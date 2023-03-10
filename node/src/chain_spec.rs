@@ -184,13 +184,13 @@ pub fn local_testnet_config() -> ChainSpec {
 						get_pair_from_seed::<AuthorityDiscoveryId>("Alice"),
 						get_pair_from_seed::<ImOnlineId>("Alice"),
 					),
-					(
-						get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
-						get_account_id_from_seed::<sr25519::Public>("Bob"),
-						get_collator_keys_from_seed("Bob"),
-						get_pair_from_seed::<AuthorityDiscoveryId>("Bob"),
-						get_pair_from_seed::<ImOnlineId>("Bob"),
-					),
+					// (
+					// 	get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
+					// 	get_account_id_from_seed::<sr25519::Public>("Bob"),
+					// 	get_collator_keys_from_seed("Bob"),
+					// 	get_pair_from_seed::<AuthorityDiscoveryId>("Bob"),
+					// 	get_pair_from_seed::<ImOnlineId>("Bob"),
+					// ),
 				],
 				vec![],
 				vec![

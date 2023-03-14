@@ -7,6 +7,7 @@ pub trait ServerManager<ServerId, GroupId> {
 }
 
 pub trait GetServerInfo<ServerId, GroupId, AccountId> {
+	fn is_server_exists(server_id: ServerId) -> bool;
 	fn try_get_server_owner(server_id: ServerId) -> Result<Option<AccountId>, DispatchError>;
 	fn try_get_server_creator(server_id: ServerId) -> Result<AccountId, DispatchError>;
 	fn try_get_server_account_id(server_id: ServerId) -> Result<AccountId, DispatchError>;

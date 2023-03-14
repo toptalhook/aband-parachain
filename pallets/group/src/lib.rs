@@ -267,6 +267,7 @@ pub mod pallet {
 		MemberAlreadyGetCandy,
 		NotServerOwner,
 		GroupNotInAnyServer,
+		ServerNotExists,
 	}
 
 	#[pallet::hooks]
@@ -291,6 +292,7 @@ pub mod pallet {
 
 			let next_group_id = NextGroupId::<T>::get();
 			let server_id = server_id.unwrap_or_else(|| Self::get_official_server());
+			ensure!(T::GetServerInfo::is_server_exists(server_id), Error::<T>::ServerNotExists);
 			let group_account_id =
 				T::GroupIdConvertToAccountId::from(next_group_id).into_account_truncating();
 
@@ -654,8 +656,10 @@ pub mod pallet {
 			is_remove_group: bool,
 		) -> DispatchResult {
 			if is_remove_group {
+				// todo
 				T::ServerManager::try_remove_old_group(server_id, group_id)
 			} else {
+				ServerOf::<T>::insert(group_id, server_id);
 				T::ServerManager::try_add_new_group(server_id, group_id)
 			}
 		}

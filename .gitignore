@@ -20,3 +20,6 @@ db*
 polkadot-launch/db*
 polkadot-launch/*.log
 polkadot-launch/rococo-local*
+rococo*
+*.json
+*genesis*

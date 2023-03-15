@@ -581,16 +581,17 @@ pub mod pallet {
 						candy.max_lucky_number > candy.claim_detail.len() as u32,
 						Error::<T>::LuckyNumberUpMax
 					);
-					let next_claimed_amount = candy
+					let new_claimed_amount = candy
 						.claimed_amount
 						.checked_add(&amount)
 						.ok_or(Error::<T>::StorageOverflow)?;
+
 					ensure!(
-						next_claimed_amount >= candy.asset.amount,
+						new_claimed_amount <= candy.asset.amount,
 						Error::<T>::ClaimedAmountUpMax
 					);
 
-					candy.claimed_amount = next_claimed_amount;
+					candy.claimed_amount = new_claimed_amount;
 					candy.claim_detail.push((lucky_man.clone(), amount));
 
 					T::MultiCurrency::repatriate_reserved_named(

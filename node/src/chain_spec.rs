@@ -19,6 +19,7 @@ use sp_runtime::{
 };
 
 pub const PARA_ID: u32 = 2257;
+pub const INIT_BALANCE: Balance = 10_0000_0000 * UNIT;
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
 pub type ChainSpec =
@@ -104,7 +105,7 @@ fn get_properties() -> Properties {
 	let mut properties = sc_chain_spec::Properties::new();
 	properties.insert("tokenSymbol".into(), "BAND".into());
 	properties.insert("tokenDecimals".into(), 12.into());
-	properties.insert("ss58Format".into(), 42.into());
+	properties.insert("ss58Format".into(), 2.into());
 	properties
 }
 
@@ -164,6 +165,65 @@ pub fn development_config() -> ChainSpec {
 	)
 }
 
+// fixme
+fn get_root() -> AccountId {
+	get_account_id_from_seed::<sr25519::Public>("Alice")
+	// AccountId32::from_string("5FQyoSCbcnodfunhcC7ZpwKkad8JSFxLaZ54aoZyb7HXoX3h").unwrap()
+}
+
+pub fn mainnet_config() -> ChainSpec {
+	// Give your base currency a unit name and decimal places
+
+	ChainSpec::from_genesis(
+		// Name
+		"Aband",
+		// ID
+		"aband",
+		ChainType::Live,
+		move || {
+			testnet_genesis(
+				// initial collators.
+				vec![
+					(
+						get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
+						get_account_id_from_seed::<sr25519::Public>("Alice"),
+						get_collator_keys_from_seed("Alice"),
+						get_pair_from_seed::<AuthorityDiscoveryId>("Alice"),
+						get_pair_from_seed::<ImOnlineId>("Alice"),
+					),
+					// (
+					// 	get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
+					// 	get_account_id_from_seed::<sr25519::Public>("Bob"),
+					// 	get_collator_keys_from_seed("Bob"),
+					// 	get_pair_from_seed::<AuthorityDiscoveryId>("Bob"),
+					// 	get_pair_from_seed::<ImOnlineId>("Bob"),
+					// ),
+				],
+				vec![],
+				vec![
+					get_root(),
+				],
+				PARA_ID.into(),
+			)
+		},
+		// Bootnodes
+		Vec::new(),
+		// Telemetry
+		get_telemetry_endpoints(),
+		// Protocol ID
+		Some("aband"),
+		// Fork ID
+		None,
+		// Properties
+		Some(get_properties()),
+		// Extensions
+		Extensions {
+			relay_chain: "kusama".into(), // You MUST set this to the correct network!
+			para_id: PARA_ID,
+		},
+	)
+}
+
 pub fn local_testnet_config() -> ChainSpec {
 	// Give your base currency a unit name and decimal places
 
@@ -172,7 +232,7 @@ pub fn local_testnet_config() -> ChainSpec {
 		"Aband Testnet",
 		// ID
 		"aband_testnet",
-		ChainType::Live,
+		ChainType::Local,
 		move || {
 			testnet_genesis(
 				// initial collators.
@@ -231,19 +291,9 @@ pub fn local_testnet_config() -> ChainSpec {
 fn testnet_genesis(
 	invulnerables: Vec<(AccountId, AccountId, NimbusId, AuthorityDiscoveryId, ImOnlineId)>,
 	initial_nominators: Vec<AccountId>,
-	mut endowed_accounts: Vec<AccountId>,
+	endowed_accounts: Vec<AccountId>,
 	id: ParaId,
 ) -> parachain_template_runtime::GenesisConfig {
-	// endow all authorities and nominators.
-	invulnerables
-		.iter()
-		.map(|x| &x.0)
-		.chain(initial_nominators.iter())
-		.for_each(|x| {
-			if !endowed_accounts.contains(x) {
-				endowed_accounts.push(x.clone())
-			}
-		});
 
 	// stakers: all validators and nominators.
 	let mut rng = rand::thread_rng();
@@ -270,7 +320,7 @@ fn testnet_genesis(
 				.to_vec(),
 		},
 		balances: parachain_template_runtime::BalancesConfig {
-			balances: endowed_accounts.iter().cloned().map(|k| (k, 1 << 60)).collect(),
+			balances: invulnerables.iter().cloned().map(|k| (k.0, 1000 * UNIT)).chain(endowed_accounts.clone().iter().map(|x| (x.clone(), INIT_BALANCE))).collect(),
 		},
 		parachain_info: parachain_template_runtime::ParachainInfoConfig { parachain_id: id },
 		session: parachain_template_runtime::SessionConfig {
@@ -297,13 +347,6 @@ fn testnet_genesis(
 			eligible_count: EligibilityValue::default(),
 		},
 		collators: parachain_template_runtime::CollatorsConfig::default(),
-		// {
-		// 	mapping: invulnerables
-		// 		.iter()
-		// 		.map(|(x, _y, z, _, _)| (x.clone(), z.clone()))
-		// 		.collect::<Vec<(AccountId, NimbusId)>>()
-		// 		.to_vec(),
-		// },
 		tokens: Default::default(),
 		staking: StakingConfig {
 			validator_count: invulnerables.len() as u32,

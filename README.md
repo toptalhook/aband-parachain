@@ -1,21 +1,23 @@
-# Substrate Cumulus Parachain PoS Template
+# Aband Parachain
 
 ## Overview
-A PoS-based Polkadot parachain development template.
-## Introduction
-A PoS parachain template based on the nimbus consensus, you can quickly develop your PoS network based on this,
-and fully use the native Staking module of the substrate, you only need to focus on your business-level code.
-If you develop PoS parachains, it will save you a lot of time.
+A decentralized social network based on defi and message encryption.
+
+The goal is to build the largest social network in the kusama ecosystem,
+using the Nostr protocol to achieve server decentralization.
+At the same time, integrate chatgpt to realize more interesting functions related to AI.
 
 ## Document
 [document](./docs/manual-test.md)
 
+## Connect mainnet
+```bash
+./aband -- --chian kusama
+
+```
 ## License
 The project is made available under the [Apache2.0](./LICENSE) license.
-## More
-A new [Cumulus](https://github.com/paritytech/cumulus/)-based Substrate node, ready for hacking ☁️..
 
-👉 Learn more about parachains [here](https://wiki.polkadot.network/docs/learn-parachains), and
-parathreads [here](https://wiki.polkadot.network/docs/learn-parathreads).
+## More
 
 

@@ -12,7 +12,7 @@ At the same time, integrate chatgpt to realize more interesting functions relate
 
 ## Connect mainnet
 ```bash
-./aband -- --chian kusama
+./aband -- --chain kusama
 
 ```
 ## License

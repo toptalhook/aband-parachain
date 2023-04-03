@@ -24,7 +24,7 @@ use frame_support::{
 	construct_runtime,
 	dispatch::DispatchClass,
 	parameter_types,
-	traits::{ConstU16, ConstU32, EitherOfDiverse, Everything, OnInitialize, U128CurrencyToVote},
+	traits::{Contains, ConstU16, ConstU32, EitherOfDiverse, Everything, OnInitialize, U128CurrencyToVote},
 	weights::{
 		constants::WEIGHT_REF_TIME_PER_SECOND, ConstantMultiplier, Weight, WeightToFeeCoefficient,
 		WeightToFeeCoefficients, WeightToFeePolynomial,
@@ -70,10 +70,10 @@ use xcm_executor::XcmExecutor;
 
 #[sp_version::runtime_version]
 pub const VERSION: RuntimeVersion = RuntimeVersion {
-	spec_name: create_runtime_str!("Aband Network"),
-	impl_name: create_runtime_str!("Aband Network"),
+	spec_name: create_runtime_str!("Aband"),
+	impl_name: create_runtime_str!("Aband"),
 	authoring_version: 1,
-	spec_version: 2023031501,
+	spec_version: 9370,
 	impl_version: 0,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
@@ -204,7 +204,18 @@ parameter_types! {
 		})
 		.avg_block_initialization(AVERAGE_ON_INITIALIZE_RATIO)
 		.build_or_panic();
-	pub const SS58Prefix: u16 = 42;
+	pub const SS58Prefix: u16 = 2;
+}
+
+
+pub struct SystemBaseCallFilter;
+impl Contains<RuntimeCall> for SystemBaseCallFilter {
+	fn contains(call: &RuntimeCall) -> bool {
+		!matches!(call,
+			RuntimeCall::Group(_) |
+			RuntimeCall::Server(_)
+		)
+	}
 }
 
 // Configure FRAME pallets to include in runtime.
@@ -245,7 +256,7 @@ impl frame_system::Config for Runtime {
 	/// The weight of database operations that the runtime can invoke.
 	type DbWeight = RocksDbWeight;
 	/// The basic call filter to use in dispatchable.
-	type BaseCallFilter = Everything;
+	type BaseCallFilter = SystemBaseCallFilter;
 	/// Weight information for the extrinsics of this pallet.
 	type SystemWeightInfo = ();
 	/// Block & extrinsics weights: base values and limits.
